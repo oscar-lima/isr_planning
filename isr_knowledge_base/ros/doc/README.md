@@ -1,23 +1,41 @@
-mir_knowledge base analyzer
-=============================
+knowledge_base_analyzer_node
+===
 
 Provides with information:
 
 a) is there unfinished goals in knowledge base?
 b) is there new predicates/knowledge in the knowledge base?
 
-how to run?
+Usage instructions.
 
-You can open png file to see terminal arrange for testing this component
+1. Run the analizer node and the knowledge base:
 
-Basically you run the anaylizer node and you publish in 
+        roscore
+        roslaunch isr_knowledge_base rosplan_knowledge_base_example.launch
+        rosrun isr_knowledge_base knowledge_base_analyzer_node
 
-        /pending_goals_analyzer/pending_goals/event_in
-        
-any information and then you get the result in the topic
+2. Analyse if there is new knowledge:
 
-        /pending_goals_analyzer/pending_goals/event_out
+        rostopic pub /knowledge_base_analyzer_node/new_knowledge/event_in std_msgs/String "data: 'e_start'"
 
-Done! now you should be able to get feedback wether the nowledge base has unfinished goals or
+You can query the result on the topic:
 
-new knowledge
+        rostopic echo /knowledge_base_analyzer_node/new_knowledge/event_out
+
+3. Analyse if there are unfinished goals:
+
+        rostopic pub /knowledge_base_analyzer_node/pending_goals/event_in std_msgs/String "data: 'e_start'"
+
+You can query the result on the topic:
+
+        rostopic echo /knowledge_base_analyzer_node/pending_goals/event_out
+
+4. Add some knowledge for testing purposes:
+
+        rqt --standalone rosplan_rqt.dispatcher.ROSPlanDispatcher
+
+Add some object instances and predicates and trigger the component again and check the result
+
+Done! Now you should be able to get feedback wether the nowledge base has
+
+unfinished goals or new knowledge.

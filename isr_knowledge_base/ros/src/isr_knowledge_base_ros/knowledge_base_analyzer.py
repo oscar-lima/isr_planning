@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+import rosservice
 from rosplan_knowledge_msgs.srv import GetAttributeService
 from std_msgs.msg import String
 
@@ -21,83 +22,142 @@ does not change. This component is useful for that purpose
 class KnowledgeBaseAnalizer(object):
     """
     Analyzes if there are new goals in the knowledge base
-
     """
-
     def __init__(self):
         # Subscribers
         rospy.Subscriber("~pending_goals/event_in", String, self.pending_goals_event_in_cb)
         rospy.Subscriber("~new_knowledge/event_in", String, self.new_knowledge_event_in_cb)
         # Publishers
-        self.pending_goals_event_out = rospy.Publisher('~pending_goals/event_out', String)
-        self.new_knowledge_event_out = rospy.Publisher('~new_knowledge/event_out', String)
+        self.pending_goals_event_out = rospy.Publisher('~pending_goals/event_out', String, queue_size=1)
+        self.new_knowledge_event_out = rospy.Publisher('~new_knowledge/event_out', String, queue_size=1)
+        # Ensure that rosplan services are available:
+        if rosservice.rosservice_find('rosplan_knowledge_msgs/GetAttributeService') == []:
+            rospy.logerr('/kcl_rosplan/get_current_knowledge service is not available! This node will not be able to work (knowledge base analyzer)')
         # for keeping memory of the information inside the knowledge base
         self.knowledge_base_info = 'attributes: []'
+        # The maximum amount of time to wait for the rosplan knowledge base service to show
+        self.kb_service_timeout = rospy.get_param('~kb_service_timeout', 3.0)
+        # to control the frequency at which this node will run
+        self.loop_rate = rospy.Rate(rospy.get_param('~loop_rate', 10))
+        # inform the user that the node has finished initialization
+        rospy.loginfo('knowledge base analyzer node initilized... ready to accept requests')
+        # member variables
+        self.is_new_knowledge_request_received = False
+        self.new_knowledge_request_msg = None
+        self.is_goals_available_request_received = False
         
 
     def pending_goals_event_in_cb(self, msg):
         """
-        Obtains an event for the component.
-
+        Callback indicating a request to know if goals are available in the KB
         """
-        rospy.loginfo('Pending goal request received...')
-        rospy.loginfo('Waiting for service: /kcl_rosplan/get_current_goals')
-        rospy.wait_for_service('/kcl_rosplan/get_current_goals')
-        rospy.loginfo('Service /kcl_rosplan/get_current_goals is available, proceeding')
-        event_out = String()
-        event_out.data = 'e_failure'
+        rospy.logdebug('Pending goal request received...')
+        self.is_goals_available_request_received = True
+        self.goals_available_request_msg = msg
+
+
+    def new_knowledge_event_in_cb(self, msg):
+        """
+        Callback indicating a request to know if new knowledge is available in the KB
+        """
+        rospy.logdebug('New knowledge request received...')
+        self.is_new_knowledge_request_received = True
+        self.new_knowledge_request_msg = msg
+
+
+    def wait_for_service(self, service_name, timeout):
+        """
+        Wait for service existance within a timeout, handling possible errors that might rise
+        """
+        rospy.loginfo('Waiting for service: ' + service_name)
+        try:
+            resp1 = rospy.wait_for_service(service_name, timeout)
+        except rospy.ROSException as exc:
+            rospy.logerr('Exception while calling ' + service_name + ' service, does it exist?')
+            return False
+        rospy.logdebug('Service ' + service_name + ' is available, proceeding')
+        return True
+
+
+    def look_for_unfinished_goals(self):
+        """
+        Query KB to see if there are unfinished goals
+        """
+        if not self.wait_for_service('/kcl_rosplan/get_current_goals', self.kb_service_timeout):
+            # rosplan kb service most likely not available
+            return False
+        # call rosplan KB service for analysis
         try:
             pending_goals = rospy.ServiceProxy('/kcl_rosplan/get_current_goals', GetAttributeService)
             response = pending_goals('')
             if str(response) == 'attributes: []':
-                rospy.loginfo('There are no pending goals in the knowledge base')
-                event_out.data = 'e_failure'
+                rospy.logdebug('There are no pending goals in the knowledge base')
+                return False
             else:
-                rospy.loginfo('There are pending goals in the knowledge base')
-                event_out.data = 'e_success'
+                rospy.logdebug('There are pending goals in the knowledge base')
+                return True
         except rospy.ServiceException, e:
             rospy.logerr('Service call failed: %s'%e)
-        rospy.loginfo('Publishing pending goals response')
-        self.pending_goals_event_out.publish(event_out)
-        
-        
-    def new_knowledge_event_in_cb(self, msg):
+
+
+    def look_for_new_knowledge(self):
         """
-        Gets information from database and informs if new knowledge has been received
+        Query KB to see if there is new knowledge available
         """
-        rospy.loginfo('New knowledge request received...')
-        rospy.loginfo('Waiting for service: /kcl_rosplan/get_current_knowledge')
-        rospy.wait_for_service('/kcl_rosplan/get_current_knowledge')
-        rospy.loginfo('Service /kcl_rosplan/get_current_knowledge is available, proceeding')
-        event_out = String()
-        event_out.data = 'e_failure'
+        if not self.wait_for_service('/kcl_rosplan/get_current_knowledge', self.kb_service_timeout):
+            # rosplan kb service most likely not available
+            return False
+        # call rosplan KB service for analysis
         try:
             knowledge_request = rospy.ServiceProxy('/kcl_rosplan/get_current_knowledge', GetAttributeService)
             response = knowledge_request('')
             if str(response) != self.knowledge_base_info:
                 rospy.loginfo('There is new knowledge stored in the knowledge base')
-                event_out.data = 'e_success'
+                # backup last KB content
+                self.knowledge_base_info = str(response)
+                return True
             else:
                 rospy.logwarn('There is no new knowledge stored in the knowledge base')
-                event_out.data = 'e_failure'
+                return False
         except rospy.ServiceException, e:
             rospy.logerr('Service call failed: %s'%e)
-        self.knowledge_base_info = str(response)
-        rospy.loginfo('Publishing new knowledge response')
-        self.new_knowledge_event_out.publish(event_out)
-        
-        
-    def start(self):
-        """
-        Starts the component.
 
+
+    def start_knowledge_base_analyzer(self):
         """
-        rospy.loginfo('Pending_goals_analyzer node initilized...')
-        rospy.spin()
-    
-    
+        knowledge base analyzer main loop
+        """
+        while not rospy.is_shutdown():
+            if self.is_new_knowledge_request_received == True:
+                # lower flag
+                self.is_new_knowledge_request_received = False
+                # analyze msg content
+                if self.new_knowledge_request_msg.data != 'e_start':
+                    rospy.logerr('event not supported, admissible values are : e_start')
+                    self.new_knowledge_event_out.publish(String('e_failure'))
+                    continue
+                if self.look_for_new_knowledge():
+                    self.new_knowledge_event_out.publish(String('e_success'))
+                else:
+                    self.new_knowledge_event_out.publish(String('e_failure'))
+            elif self.is_goals_available_request_received == True:
+                # lower flag
+                self.is_goals_available_request_received = False
+                # analyze msg content
+                if self.goals_available_request_msg.data != 'e_start':
+                    rospy.logerr('event not supported, admissible values are : e_start')
+                    self.pending_goals_event_out.publish(String('e_failure'))
+                    continue
+                if self.look_for_unfinished_goals():
+                    rospy.loginfo('There are unfinished goals in the KB')
+                    self.pending_goals_event_out.publish(String('e_success'))
+                else:
+                    self.pending_goals_event_out.publish(String('e_failure'))
+            self.loop_rate.sleep()
+
+
 def main():
-    rospy.init_node('pending_goals_analyzer')
+    rospy.init_node('knowledge_base_analyzer_node')
     knowledge_base_analyzer = KnowledgeBaseAnalizer()
-    knowledge_base_analyzer.start()
+    knowledge_base_analyzer.start_knowledge_base_analyzer()
     
