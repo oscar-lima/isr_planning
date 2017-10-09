@@ -1,0 +1,9 @@
+# goal definition
+string shelf
+---
+# result definition
+bool success
+---
+# feedback
+string current_state
+string text

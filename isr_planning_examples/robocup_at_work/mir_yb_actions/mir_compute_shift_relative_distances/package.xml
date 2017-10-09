@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package>
+  <name>mir_compute_shift_relative_distances</name>
+  <version>1.0.0</version>
+  <description>
+    1. Clear previous information (move relative distances dictionary)
+    2. look left (with arm)
+    3. recognize objects
+    4. compute global poses (in front of objects) and accumulate them
+    5. look right (with arm)
+    6. recognize objects
+    7. compute global poses and accumulate
+    
+    result: end product of this action is a list of poses in map/odom frame that the robot needs to move to in order to be in front of the objects.
+  </description>
+
+  <license>GPLv3</license>
+
+  <author email="olima_84@yahoo.com">Oscar Lima</author>
+  <maintainer email="olima_84@yahoo.com">Oscar Lima</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>nav_msgs</run_depend>
+
+  <build_depend>roscpp</build_depend>
+  
+
+</package>

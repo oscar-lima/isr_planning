@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package>
+  <name>mir_align_with_object</name>
+  <version>1.0.0</version>
+  <description>
+      1. get params from planner about which object to align to
+      2. get the pose from pose selector by publishing the name obtained in 1)
+      3. trigger direct base controller to reach the pose published in 2)
+
+    result: end product of this action is a list of poses in map/odom frame that the robot needs to move to in order to be in front of the objects.
+  </description>
+
+  <license>GPLv3</license>
+
+  <author email="olima_84@yahoo.com">Oscar Lima</author>
+  <maintainer email="olima_84@yahoo.com">Oscar Lima</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>nav_msgs</run_depend>
+
+  <build_depend>roscpp</build_depend>
+  
+
+</package>

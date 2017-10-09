@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import mbot_actions_ros.place_client_test
+
+if __name__ == '__main__':
+    mbot_actions_ros.place_client_test.main()

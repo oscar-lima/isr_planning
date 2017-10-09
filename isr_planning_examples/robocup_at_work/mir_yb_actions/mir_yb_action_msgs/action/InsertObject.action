@@ -1,0 +1,10 @@
+# goal definition
+string peg
+string hole
+---
+# result definition
+bool success
+---
+# feedback
+string current_state
+string text

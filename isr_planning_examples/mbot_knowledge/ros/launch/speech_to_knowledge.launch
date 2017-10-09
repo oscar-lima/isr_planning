@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- the output topic of the speech recognition -->
+  <arg name="speech_topic" default="recognized_speech" />
+
+  <!-- speech to knowledge node -->
+  <node pkg="mbot_knowledge" type="speech_to_knowledge.py" name="speech_to_knowledge" output="screen" >
+    <remap from="~speech_recognition" to="$(arg speech_topic)"/>
+  </node>
+
+</launch>

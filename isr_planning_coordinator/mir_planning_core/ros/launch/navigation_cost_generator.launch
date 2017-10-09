@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- generates distance matrix, based on distances between locations -->
+    
+    <arg name="domain" default="btt_without_shift" />
+    <arg name="nav_cost_file_path" default="$(find mir_knowledge)/common/pddl/$(arg domain)/costs/navigation_costs.pddl" />
+
+    <!-- NOTE: needs bringup and nav stack to be launched separately !! -->
+    
+    <!-- Generate navigation costs (should be launched one time only) -->
+    <include file="$(find mcr_cost_generators)/ros/launch/navigation_cost_generator.launch">
+        <arg name="domain" value="$(arg domain)" />
+        <arg name="nav_cost_file_path" value="$(arg nav_cost_file_path)" />
+    </include>
+
+</launch>

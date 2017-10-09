@@ -1,0 +1,12 @@
+<library path="src">
+  <class name="Actionlib client plugin" type="rqt_action_client.action_client_plugin.ActionClientPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+        Actionlib client rqt interface
+    </description>
+    <qtgui>
+      <label>Action Client Plugin</label>
+      <icon type="theme">system-help</icon>
+      <statustip>Actionlib client rqt interface</statustip>
+    </qtgui>
+  </class>
+</library>

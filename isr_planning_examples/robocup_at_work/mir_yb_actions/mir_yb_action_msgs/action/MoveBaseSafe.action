@@ -1,0 +1,15 @@
+# goal definition
+string arm_safe_position
+string source_location
+string destination_location
+string destination_orientation
+bool use_destination_pose
+geometry_msgs/PoseStamped destination_pose
+---
+# result definition
+bool success
+---
+# feedback
+string current_state
+string text
+

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+    <name>isr_planning</name>
+    <version>1.0.0</version>
+    <description>
+        Task planning metapackage.
+    </description>
+
+    <license>GPLv3</license>
+
+    <author email="olima@isr.tecnico.ulisboa.pt">Oscar Lima</author>
+    <maintainer email="olima@isr.tecnico.ulisboa.pt">Oscar Lima</maintainer>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <export>
+        <metapackage/>
+    </export>
+</package>

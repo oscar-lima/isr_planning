@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- checks is ~/.ros/mercury.plan changed timestamp -->
+    <node pkg="plan_success_analyzer" type="plan_success_analizer.py" name="plan_success_analizer" ns="task_planning"/>
+
+</launch>

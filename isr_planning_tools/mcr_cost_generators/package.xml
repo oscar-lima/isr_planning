@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+    <name>mcr_cost_generators</name>
+    <version>1.0.0</version>
+    <description>Generates perception and navigation cost information usefull for task planning</description>
+
+    <maintainer email="olima_84@yahoo.com">Oscar Lima</maintainer>
+
+    <license>GPLv3</license>
+
+    <author email="olima_84@yahoo.com">Oscar Lima</author>
+
+    <buildtool_depend>catkin</buildtool_depend>
+    <build_depend>roscpp</build_depend>
+    <build_depend>std_msgs</build_depend>
+    <build_depend>geometry_msgs</build_depend>
+    <build_depend>nav_msgs</build_depend>
+    <build_depend>roslint</build_depend>
+    <build_depend>tf</build_depend>
+    
+    <run_depend>roscpp</run_depend>
+    <run_depend>std_msgs</run_depend>
+    <run_depend>geometry_msgs</run_depend>
+    <run_depend>nav_msgs</run_depend>
+    <run_depend>tf</run_depend>
+    
+    <test_depend>roslaunch</test_depend>
+</package>

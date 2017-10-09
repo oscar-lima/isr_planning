@@ -1,0 +1,9 @@
+# goal definition
+string drill_plate
+---
+# result definition
+bool drill_plate_result
+---
+# feedback
+string current_state
+string text

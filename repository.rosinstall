@@ -1,0 +1,4 @@
+- git:
+    local-name: ROSPlan
+    uri: https://github.com/socrob/ROSPlan.git
+    version: kinetic

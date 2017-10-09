@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- mockup planner executor, useful for debugging planning pipeline -->
+    <arg name="mockup" default="false" />
+   
+    <!-- run planner executor -->
+    <node pkg="mir_planner_executor" type="planner_executor.py" name="planner_executor" output="screen" args="$(arg mockup)" />
+  
+</launch>

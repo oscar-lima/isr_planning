@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="target_pose" default="/mcr_perception/object_selector/output/object_pose" />
+  <arg name="input_map" default="/map" />
+
+   <node pkg="mcr_manipulation_measurers" type="pose_transformer_node"
+              name="pose_transformer" output="screen" ns="base_collision_checker_pipeline">
+
+            <!-- the cycle rate of the node (in Hz) -->
+            <param name="loop_rate" type="double" value="10.0"/>
+
+            <param name="wait_for_transform" type="double" value="0.1"/>
+
+            <!-- Reference frame to transform target pose -->
+            <param name="target_frame" type="str" value="map"/>
+
+            <!-- Flag to use node in trigger mode -->
+            <param name="trigger" type="boolean" value="false"/>
+
+            <!-- Pose in (geometry_msgs/PoseStamped) -->
+            <remap from="~pose_in" to="$(arg target_pose)" />
+
+            <remap from="~event_in" to="/base_collision_checker_pipeline/base_collision_checker_node/event_in" />
+   </node>
+
+   <node pkg="mcr_base_collision_checker" type="base_collision_checker"
+      name="base_collision_checker_node" output="screen" ns="base_collision_checker_pipeline">
+
+    <!-- input map (geometry_msgs/PoseStamped) -->
+    <remap from="~input_map" to="$(arg input_map)" />
+
+    <remap from="~pose_in" to="/base_collision_checker_pipeline/pose_transformer/transformed_pose" />
+   </node>
+</launch>

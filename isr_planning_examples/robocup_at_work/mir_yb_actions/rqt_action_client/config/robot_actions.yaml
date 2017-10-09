@@ -1,0 +1,6 @@
+MoveBaseSafe:
+    action_server: move_base_safe_server
+    package: mbot_action_msgs
+Explain:
+    action_server: explain_server
+    package: mbot_action_msgs

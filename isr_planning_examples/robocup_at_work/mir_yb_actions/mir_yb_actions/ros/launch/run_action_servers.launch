@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="use_mokeup_pose" default="false" />
+
+    <!-- move base safe action server -->
+    <node pkg="mir_move_base_safe" type="move_base_safe_server.py" name="move_base_safe_server" output="screen" />
+
+    <!-- stage action server -->
+    <node pkg="mir_stage_object" type="stage_object_server.py" name="stage_object_server" output="screen" />
+
+    <!-- unstage action server -->
+    <node pkg="mir_unstage_object" type="unstage_object_server.py" name="unstage_object_server" output="screen" />
+
+    <!-- perceive location action server -->
+    <node pkg="mir_perceive_location" type="perceive_location_server.py" name="perceive_location_server" output="screen" />
+
+    <!-- pick object action server -->
+   
+    <group if="$(arg use_mokeup_pose)">
+        <node pkg="mir_pick_object" type="pick_object_server.py" name="pick_object_server" output="screen"
+            args="mokeup"/>
+    </group>
+    <group unless="$(arg use_mokeup_pose)">
+        <node pkg="mir_pick_object" type="pick_object_server.py" name="pick_object_server" output="screen" />
+    </group>
+
+    <!-- wbc pick object action server -->
+    <group if="$(arg use_mokeup_pose)">
+        <node pkg="mir_pick_object" type="pick_object_server_whole_body_control.py" name="wbc_pick_object_server"
+            output="screen" args="mokeup"/>
+    </group>
+    <group unless="$(arg use_mokeup_pose)">
+        <node pkg="mir_pick_object" type="pick_object_server_whole_body_control.py" name="wbc_pick_object_server"
+            output="screen"/>
+    </group>
+    
+    <!-- place object action server -->
+    <node pkg="mir_place_object" type="place_object_server.py" name="place_object_server" output="screen" />
+    
+    <!-- compute move base relative distances (to later on align with object) -->
+    <node pkg="mir_compute_shift_relative_distances" type="compute_shift_relative_distances_server.py" name="compute_relative_dist_server" output="screen" />
+    
+    <!-- align with objects -->
+    <node pkg="mir_align_with_object" type="align_with_object_server.py" name="align_object_server" output="screen" />
+
+</launch>

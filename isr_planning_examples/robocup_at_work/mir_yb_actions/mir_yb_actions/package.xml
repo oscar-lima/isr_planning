@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>mir_yb_actions</name>
+  <version>1.0.0</version>
+  <description>
+      youbot actions package, provides with common code among yb
+      actions + lauch file to run all action servers
+  </description>
+  
+  <maintainer email="olima_84@yahoo.com">Oscar Lima</maintainer>
+  
+  <license>GPLv3</license>
+  
+  <author email="olima_84@yahoo.com">Oscar Lima</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+</package>

@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import mbot_planner_executor_ros.mbot_planner_executor
+
+if __name__ == '__main__':
+    mbot_planner_executor_ros.mbot_planner_executor.main()

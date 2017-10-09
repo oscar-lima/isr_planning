@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+    
+    <arg name="config_file" default="$(find mir_planning_core)/ros/config/planning_coordinator.yaml" />
+    
+    <node pkg="mcr_event_gui" type="event_gui_node" name="event_gui" ns="mcr_tools" output="screen">
+        <param name="config_file" type="str" value="$(arg config_file)"/>
+    </node>
+
+</launch>

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    
+    <!-- msg dispatch msg generator -->
+    <node pkg="parse_dispatch_msgs" type="ipc_2014_dispatch_msg_generator.py" name="dispatch_msg_generator" output="screen" ns="task_planning" />
+    
+</launch>

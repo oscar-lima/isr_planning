@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import mbot_actions_ros.perceive_location_server
+
+if __name__ == '__main__':
+    mbot_actions_ros.perceive_location_server.main()

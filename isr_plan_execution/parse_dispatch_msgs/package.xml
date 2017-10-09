@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+    <name>parse_dispatch_msgs</name>
+    <version>0.0.1</version>
+    <description>
+
+        parses and dispatches plans created with the ipc 2014 format
+
+    </description>
+    
+    <author email="hoffmann@cs.uni-saarland.de">Jörg Hoffmann</author>
+    <maintainer email="olima_84@yahoo.com">Oscar Lima</maintainer>
+    
+    <license>IPC 2014 open source code release license</license>
+
+    <url>https://github.com/mas-group/robocup-at-work</url>
+    <url>https://fai.cs.uni-saarland.de/katz/</url>
+    
+    <buildtool_depend>catkin</buildtool_depend>
+
+</package>

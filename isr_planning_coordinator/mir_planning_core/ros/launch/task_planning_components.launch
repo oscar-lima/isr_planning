@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- knowledge base args, they are reused by other components as well -->
+    <!--arg name="domain" default="robocup_domain" /-->
+    <arg name="domain" default="btt_without_shift" />
+    <arg name="base_path" default="$(find mir_knowledge)/common/pddl/$(arg domain)" />
+    <arg name="domain_path" default="$(arg base_path)/domain.pddl" />
+    <arg name="database_path" default="$(find mir_knowledge)/common/mongoDB" />
+    
+    <!-- upload domain args - pddl problem that will be loaded as instrinsic knowledge -->
+    <arg name="pddl_problem" default="minimum_required_facts" />
+    
+    <!-- pddl problem gen - path for the pddl problem generator to save the created file, and for the planner to make plan -->
+    <arg name="problem_path" default="$(arg base_path)/problems/p1.pddl" />
+    
+    <!-- pddl problem gen - indicate to the pddl problem generator if cost is required -->
+    <arg name="cost_required" default="true" />
+    <arg name="cost_file_1" default="$(arg base_path)/costs/navigation_costs.pddl" if="$(arg cost_required)" />
+    <arg name="cost_file_2" default="$(arg base_path)/costs/perception_costs.pddl" if="$(arg cost_required)" />
+    
+    <!-- mercury planner args -  -->
+    <arg name="mercury_planner_base_path" default="$(find mercury_planner)/build/Mercury-fixed/seq-sat-mercury" />
+    <arg name="timeout" default="10.0" /> <!-- the maximum amount of time for the planner to produce a plan in seconds-->
+    <arg name="parametrized_search" default="false" /> <!-- false : single search, true : 10 times search with different params -->
+    <arg name="search_cost_type" default="1" unless="$(arg parametrized_search)" /> <!-- options : 1,2 -->
+    <arg name="search_weigth" default="3" unless="$(arg parametrized_search)" /> <!-- suggested : 1-5 -->
+    
+    <!-- rosplan knowledge base -->
+    <include file="$(find mcr_pddl_problem_generator)/ros/launch/rosplan_knowledge_base_example.launch">
+        <arg name="base_path" value="$(arg base_path)" />
+        <arg name="domain_path" value="$(arg domain_path)" />
+        <arg name="database_path" value="$(arg database_path)" />
+    </include>
+    
+    <!-- instrinsic knowledge -->
+    <!-- to upload knowledge which will not come from referee box, such as yb intrinsic knowledge, object affordances, etc -->
+    <!-- mir_knowedge upload_knowledge : parses minimum_problem.pddl and uploads instances to kb -->
+    <include file="$(find mcr_knowledge)/ros/launch/upload_knowledge_example.launch">
+        <arg name="domain_path" value="$(arg base_path)" />
+        <arg name="pddl_problem" value="$(arg pddl_problem)" />
+    </include>
+
+    <!-- mir_knowledge_base_analyzer knowledge_base_analyzer : tells if there are new goals or changes in facts by queries to kb -->
+    <include file="$(find mir_knowledge_base_analyzer)/ros/launch/knowledge_base_analyzer.launch"/>
+    
+    <!-- automatic pddl problem generation from kb snapshot -->
+    <include file="$(find mcr_pddl_problem_generator)/ros/launch/pddl_problem_generator_example.launch">
+        <arg name="base_path" value="$(arg base_path)" />
+        <arg name="problem_path" value="$(arg problem_path)" />
+        <arg name="cost_required" value="$(arg cost_required)" />
+        <arg name="cost_file_1" value="$(arg cost_file_1)" if="$(arg cost_required)" />
+        <arg name="cost_file_2" value="$(arg cost_file_2)" if="$(arg cost_required)" />
+    </include>
+    
+    <!-- mercury planner, make plan component -->
+    <include file="$(find mcr_task_planners)/ros/launch/mercury_planner_example.launch">
+        <arg name="domain_path" value="$(arg domain_path)" />
+        <arg name="problem_path" value="$(arg problem_path)" />
+        <arg name="mercury_planner_base_path" value="$(arg mercury_planner_base_path)" />
+        <arg name="timeout" value="$(arg timeout)" />
+        <arg name="parametrized_search" value="$(arg parametrized_search)" />
+        <arg name="search_cost_type" value="$(arg search_cost_type)" />
+        <arg name="search_weigth" value="$(arg search_weigth)" />
+    </include>
+    
+    <!-- plan success analyser, for now checks only if timestamp of plan changed -->
+    <include file="$(find plan_success_analyzer)/ros/launch/plan_success_analyzer.launch"/>
+    
+    <!-- dispatch msg generator, parses the plan produced by the IPC planner and converts into vector of actions msg -->
+    <include file="$(find parse_dispatch_msgs)/ros/launch/dispatch_generator.launch"/>
+    
+    <!-- planning coordinator sm -->
+    <!--node pkg="mir_planning_core" type="planning_coordinator_sm.py" name="planning_coordinator_sm" output="screen"/-->
+    
+</launch>

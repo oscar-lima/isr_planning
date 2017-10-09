@@ -1,0 +1,14 @@
+objects_recognition_rate:
+    F20_20_B:           100.0
+    F20_20_G:           0.0
+    S40_40_B:           100.0
+    S40_40_G:           20.0
+    M20_100:            100.0
+    M20:                0.0
+    M30:                100.0
+    R20:                100.0
+    BEARING_BOX:        60.0
+    BEARING:            0.0
+    AXIS:               40.0
+    DISTANCE_TUBE:      0.0
+    MOTOR:              100.0

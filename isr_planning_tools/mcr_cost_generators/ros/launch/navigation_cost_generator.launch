@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- NOTE: This is an example launch file, please do not modify! -->
+
+    <arg name="domain" default="example_domain" />
+    <arg name="nav_cost_file_path" default="$(find mcr_knowledge)/common/pddl/$(arg domain)/costs/navigation_costs.pddl" />
+    
+    <!-- pose array to path converter -->
+    <include file="$(find mcr_navigation_tools)/ros/launch/pose_array_to_path_converter.launch" />
+    
+    <!-- path length calculator -->
+    <include file="$(find mcr_navigation_tools)/ros/launch/path_length_calculator.launch" />
+
+    <!-- Generates navigation pddl costs for task planning -->
+    <node pkg="mcr_cost_generators" type="navigation_cost_generator_node" name="navigation_cost_generator" output="screen" ns="mcr_task_planning" >
+        <param name="global_frame" value="map" />
+        <param name="make_plan_service" value="/move_base/GlobalPlannerWithOrientations/make_plan" />
+        <param name="cost_file_path" value="$(arg nav_cost_file_path)" />
+        <param name="self_location_cost" value="100.0" />
+        <param name="cost_multiplier" value="2.0" />
+        
+        <remap from="~event_in" to="/mcr_navigation/path_length_calculator/event_in" />
+        <remap from="~event_out" to="/mcr_navigation/path_length_calculator/event_out" />
+        <remap from="~path_length" to="/mcr_navigation/path_length_calculator/path_length" />
+    </node>
+
+</launch>

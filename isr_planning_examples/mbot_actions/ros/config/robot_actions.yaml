@@ -1,0 +1,13 @@
+MoveBaseSafe:
+    action_server: move_base_safe_server
+    package: mbot_action_msgs
+Explain:
+    action_server: explain_server
+    package: mbot_action_msgs
+PerceiveLocation:
+    action_server: perceive_location_server
+    package: mbot_action_msgs
+PickObject:
+    action_server: pick_object_server
+    package: mbot_action_msgs
+

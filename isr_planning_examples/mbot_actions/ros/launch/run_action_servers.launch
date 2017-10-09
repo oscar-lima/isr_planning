@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- example to overload the camera to be used in perceive_location_server -->
+  <!-- <param name="camera/overload" value="camera_head" /> -->
+
+  <!-- mbot action lib servers -->
+
+  <!-- explain a question to a puzzled human -->
+  <node pkg="mbot_actions" type="explain_server_node" name="explain_server" output="screen" />
+
+  <!-- move base action lib server state machine -->
+  <node pkg="mbot_actions" type="move_base_safe_server_node" name="move_base_safe_server" output="screen" />
+
+  <!--place object-->
+  <node pkg="mbot_actions" type="place_server_node" name="place_server" output="screen" />
+
+  <!-- perception server -->
+  <node pkg="mbot_actions" type="perceive_location_server_node" name="perceive_location_server_node" output="screen" />
+
+  <!-- pick object server -->
+  <node pkg="mbot_actions" type="pick_object_server_node" name="pick_object_server_node" output="screen" />
+
+</launch>

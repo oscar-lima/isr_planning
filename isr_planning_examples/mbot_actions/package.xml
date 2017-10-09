@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package>
+    <name>mbot_actions</name>
+    <version>1.0.0</version>
+    <description>
+        Action lib servers which are state machines wrapped around action lib
+    </description>
+    
+    <maintainer email="olima@isr.tecnico.ulisboa.pt">Oscar Lima</maintainer>
+    <license>GPLv3</license>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <build_depend>mbot_action_msgs</build_depend>
+    <build_depend>smach_ros</build_depend>
+    <build_depend>mcr_states</build_depend>
+    <build_depend>mbot_states</build_depend>
+    <build_depend>monarch_msgs</build_depend>
+    <build_depend>mbot_semantic_head_controller</build_depend>
+
+    <run_depend>actionlib</run_depend>
+    <run_depend>actionlib_msgs</run_depend>
+    <run_depend>mbot_action_msgs</run_depend>
+    <run_depend>smach_ros</run_depend>
+    <run_depend>mcr_states</run_depend>
+    <run_depend>mbot_states</run_depend>
+    <run_depend>monarch_msgs</run_depend>
+
+</package>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- NOTE: This is an example launch file, please do not modify! -->
+
+    <arg name="perception_cost_dataset" default="example_perception_cost_params" />
+    <arg name="domain" default="example_domain" />
+
+    <!-- Generates perception pddl costs for task planning -->
+    <node pkg="mcr_cost_generators" type="perception_cost_generator_node" name="perception_cost_generator" output="screen" ns="mcr_task_planning" >
+        <param name="minimum_cost" value="2.0" /> <!-- the floor for the perception cost, minimum possible cost value -->
+        <param name="maximum_cost" value="20.0" /> <!-- the ceil for the perception cost, maximum possible cost value  -->
+        <param name="decrease_rate" value="20.0" /> <!-- the rate at which the object recognition rate should be decreased if failed to perceive -->
+        <param name="cost_file_path" value="$(find mcr_knowledge)/common/pddl/$(arg domain)/costs/perception_costs.pddl" />
+        <rosparam file="$(find mcr_cost_generators)/ros/config/$(arg perception_cost_dataset).yaml" command="load" />
+    </node>
+
+</launch>

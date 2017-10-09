@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- mockup planner executor, useful for debugging planning pipeline -->
+    <arg name="mockup" default="false" />
+    
+    <!-- the topic that the planner executor will listen to -->
+    <arg name="plan_topic" default="/task_planning/dispatch_msg_generator/plan" />
+
+    <!-- the topic that the planner executor will listen to -->
+    <arg name="speech_recognition_topic" default="recognized_speech" />
+
+    <!-- run planner executor -->
+    <node pkg="mbot_planner_executor" type="mbot_planner_executor" name="planner_executor" output="screen" >
+        <param name="mockup" value="$(arg mockup)" />
+        <remap from="~plan" to="$(arg plan_topic)"/>
+        <remap from="~speech_recognition" to="$(arg speech_recognition_topic)"/>
+    </node>
+  
+</launch>

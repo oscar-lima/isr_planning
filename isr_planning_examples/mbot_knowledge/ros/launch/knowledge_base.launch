@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- robot domain : you need to create a model of the task that the robot is going to perform -->
+    <arg name="domain" default="isr_demo" />
+
+    <!-- Semantic knowledge base, stores objects, instances and goals -->
+    <include file="$(find mcr_knowledge)/ros/launch/knowledge_base.launch">
+        <arg name="domain_path" value="$(find mbot_knowledge)/common/pddl/$(arg domain)" />
+    </include>
+
+</launch>

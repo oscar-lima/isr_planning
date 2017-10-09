@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="height_tolerance" default="0.15"/>
+    <arg name="min_distance_to_object" default="0.02"/>
+    <arg name="max_distance_to_object" default="0.06"/>
+
+    <!-- move base action lib server name -->
+    <!--arg name="move_base_action_name" default="move_base"/-->
+
+    <!-- Object selector (random), second instance of object selector (one is used for picking), but this one with random selection -->
+    <node pkg="mcr_perception_selectors" type="object_selector" name="random_object_selector" output="screen" ns="mcr_perception">
+        <param name="frame_rate" type="int" value="5" />
+        <param name="selection_type" type="int" value="1" />    <!-- object by name = 0; random object = 1; closest object = 2 -->
+
+        <remap from="~input/object_list" to="/mcr_perception/object_detector/object_list" />
+    </node>
+
+    <!-- transform (republish) pose comming from random object selector without x component and without rotation -->
+    <node pkg="mir_compute_shift_relative_distances" type="pose_transformer_republisher.py"
+          name="random_obj_selector_transformer_republisher" output="screen" ns="move_base_relative">
+
+        <!-- the cycle rate of the node (in Hz) -->
+        <param name="loop_rate" type="double" value="100.0"/>
+
+        <!-- time to wait for transform to become available (in secs) -->
+        <param name="wait_for_transform" type="double" value="0.1"/>
+
+        <!-- target frame required to transform input pose -->
+        <param name="target_frame" type="str" value="base_link"/>
+
+        <!-- target frame required to transform input pose -->
+        <param name="max_shift_distance" type="double" value="0.2"/>
+
+        <remap from="~event_in" to="/move_base_relative/random_obj_selector_transformer_republisher/event_in" />
+        <remap from="~pose_in" to="/mcr_perception/random_object_selector/output/object_pose" /> <!-- pose in -->
+        <remap from="~transformed_pose" to="/move_base_relative/random_obj_selector_transformer_republisher/output/pose" /> <!-- pose out -->
+    </node>
+
+    <!-- republish previous pose in odom frame -->
+    <node pkg="mcr_manipulation_measurers" type="pose_transformer_node"
+          name="modified_pose_transformer" output="screen" ns="move_base_relative">
+
+        <!-- the cycle rate of the node (in Hz) -->
+        <param name="loop_rate" type="double" value="100.0"/>
+
+        <!-- time to wait for transform to become available (in secs) -->
+        <param name="wait_for_transform" type="double" value="0.1"/>
+
+        <!-- to publish continuously the pose out -->
+        <param name="publish_continuously" type="bool" value="False"/>
+
+        <!-- target frame required to transform input pose -->
+        <param name="target_frame" type="str" value="odom"/>
+
+        <remap from="~event_in" to="/move_base_relative/modified_pose_transformer/event_in" />
+        <remap from="~pose_in" to="/move_base_relative/random_obj_selector_transformer_republisher/output/pose" /> <!-- pose in -->
+        <remap from="~transformed_pose" to="/move_base_relative/random_obj_selector_transformer_republisher/output/transformed_pose" /> <!-- pose out -->
+    </node>
+    
+    <!-- component that remembers the previously published pose and allows to republish later based on object name -->
+    <node pkg="mir_pose_selector" type="pose_selector" name="pose_selector" output="screen" ns="move_base_relative">
+      <remap from="~object_name" to="/mcr_perception/random_object_selector/object_name" />
+      <remap from="~pose_in" to="/move_base_relative/random_obj_selector_transformer_republisher/output/transformed_pose" />
+      <remap from="~selected_object_name" to="/move_base_relative/pose_selector/selected_object_name" />
+      <remap from="~pose_out" to="/move_base_wrapper/pose_in" /> <!-- to get republished continuosly -->
+
+      <param name="frame_rate" type="int" value="5" />
+      <param name="selection_type" type="int" value="0" />	<!-- object by name = 0; random object = 1; closest object = 2 -->
+
+    </node>
+
+  <!-- NOTE : requires object recognition mean circle, moveit move group separately -->
+
+</launch>

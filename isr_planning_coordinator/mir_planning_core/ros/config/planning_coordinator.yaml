@@ -1,0 +1,28 @@
+1.intrinsic_knowledge: #open loop
+    event_in_topic: /upload_knowledge/event_in
+    event_in_strings: [e_trigger]
+    event_out_topic: /upload_knowledge/event_out
+2.check_unfinished_goals:
+    event_in_topic: /knowledge_base_analyzer/pending_goals/event_in
+    event_in_strings: [e_start]
+    event_out_topic: /knowledge_base_analyzer/pending_goals/event_out
+3.check_new_knowledge:
+    event_in_topic: /knowledge_base_analyzer/new_knowledge/event_in
+    event_in_strings: [e_start]
+    event_out_topic: /knowledge_base_analyzer/new_knowledge/event_out
+4.generate_pddl_problem:
+    event_in_topic: /mcr_pddl_problem_generator/pddl_problem_generator_node/event_in
+    event_in_strings: [e_trigger]
+    event_out_topic: /mcr_pddl_problem_generator/pddl_problem_generator_node/event_out
+5.make_plan:
+    event_in_topic: /mcr_task_planning/mercury_planner/event_in
+    event_in_strings: [e_trigger]
+    event_out_topic: /mcr_task_planning/mercury_planner/event_out
+6.analyse_plan_success:
+    event_in_topic: /task_planning/plan_success_analizer/event_in
+    event_in_strings: [e_start]
+    event_out_topic: /task_planning/plan_success_analizer/event_out
+7.dispatch_and_executor:
+    event_in_topic: /task_planning/dispatch_msg_generator/event_in
+    event_in_strings: [e_start]
+    event_out_topic: /planner_executor/event_out
