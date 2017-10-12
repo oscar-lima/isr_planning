@@ -15,8 +15,8 @@ rosservice call /kcl_rosplan/get_current_knowledge "predicate_name: ''"
 stores this value in memory as string
 if this string value does not change with respect to the previous request
 then it means knowledge base has not changed. In the scenario in which the planner
-fails to create a plan, it makes no sense to try to plan again if  the knowledge base
-does not change. This component is useful for that purpose
+fails to create a plan, it makes no sense to try to plan again if the knowledge base
+does not change. This component is useful for that purpose.
 """
 
 class KnowledgeBaseAnalizer(object):

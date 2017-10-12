@@ -8,7 +8,7 @@ b) is there new predicates/knowledge in the knowledge base?
 
 Usage instructions.
 
-1. Run the analizer node and the knowledge base:
+1. Run the analyzer node and the knowledge base:
 
         roscore
         roslaunch isr_knowledge_base rosplan_knowledge_base_example.launch

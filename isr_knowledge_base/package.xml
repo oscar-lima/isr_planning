@@ -22,5 +22,7 @@
 
     <run_depend>rosplan_knowledge_base</run_depend>
     <run_depend>rosplan_rqt</run_depend>
+    <run_depend>mongodb_store</run_depend>
+    <run_depend>rosplan_knowledge_base</run_depend>
 
 </package>

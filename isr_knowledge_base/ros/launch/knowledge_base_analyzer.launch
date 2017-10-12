@@ -1,9 +1,17 @@
 <?xml version="1.0"?>
 <launch>
- 
-    <!-- informs if there is pending goals, or new knowledge in the knowledge base -->
-    
-    <node   pkg="mir_knowledge_base_analyzer" type="knowledge_base_analyzer" name="knowledge_base_analyzer" 
-            respawn="false" output="screen"/>
+
+    <!-- NOTE: This is an example launch file, please do not modify ! -->
+
+    <!-- Knowledge base analyser, query rosplan KB to check for unfinished goals and new knowledge -->
+    <node pkg="isr_knowledge_base" type="knowledge_base_analyzer_node" name="knowledge_base_analyzer_node" output="screen" >
+
+        <!-- the node will wait for this amount of time for rosplan service to become available -->
+        <param name="kb_service_timeout" value="3.0" />
+
+        <!-- the node will run at this frequency -->
+        <param name="loop_rate" value="10.0" />
+
+    </node>
 
 </launch>
