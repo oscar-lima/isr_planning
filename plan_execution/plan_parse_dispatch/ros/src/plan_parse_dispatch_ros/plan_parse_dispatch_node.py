@@ -6,9 +6,7 @@ from std_msgs.msg import String
 from rosplan_dispatch_msgs.msg import ActionDispatch
 from rosplan_dispatch_msgs.msg import CompletePlan
 from diagnostic_msgs.msg import KeyValue
-# from plan_parse_dispatch.plan_parser_utils import convert_IPC2014_plan_file_to_list
-# from plan_parse_dispatch.plan_parser_utils import Neutral
-import plan_parse_dispatch.plan_parser_utils
+from plan_parse_dispatch.plan_parser_utils import convert_IPC2014_plan_file_to_list
 
 class PlanParseDispatch(object):
     '''
@@ -43,7 +41,7 @@ class PlanParseDispatch(object):
             rospy.logdebug(action)
             for jj, parameter in enumerate(action):
                 msg.parameters.append(KeyValue(str(jj + 1), parameter))
-            complete_plan.plan_as_list.append(msg)
+            complete_plan.plan.append(msg)
         self.pub_plan.publish(complete_plan)
         rospy.loginfo('Complete plan was published to ~plan topic')
         rospy.logdebug(str(complete_plan))
