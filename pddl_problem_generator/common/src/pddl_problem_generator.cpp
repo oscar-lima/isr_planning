@@ -8,7 +8,7 @@
  * 
  */
 
-#include <mcr_pddl_problem_generator/pddl_problem_generator.h>
+#include <pddl_problem_generator/pddl_problem_generator.h>
 #include <map>
 #include <string>
 #include <vector>

@@ -13,7 +13,7 @@
 
 #include <ros/ros.h>
 #include <rosplan_planning_system/PlanningEnvironment.h>
-#include <mcr_pddl_problem_generator/pddl_problem_generator.h>
+#include <pddl_problem_generator/pddl_problem_generator.h>
 #include <std_msgs/String.h>
 #include <string>
 #include <boost/filesystem.hpp>
