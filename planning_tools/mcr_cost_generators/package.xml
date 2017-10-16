@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<package>
+  <name>mcr_cost_generators</name>
+  <version>1.0.0</version>
+  <description>
+      Generates perception and navigation cost information useful for task planning.
+
+      For Navigation it calls motion planning algorithm and calculates the path lentgh
+      between all locations, this is stored in a distance matrix that the planner can use.
+      This cost information is computed offline.
+      
+      The perception cost is computed online, you start with an initial cost for all objects
+      which depends on a previously assumed to be done benchmark. So after the benchmark you
+      have an initial estimation of how good your perception is for a particular object.
+      This node will update this beliefs based on whether the robot failed or succeded in
+      perceiving an object.
+  </description>
+
+  <maintainer email="olima@isr.tecnico.ulisboa.pt">Oscar Lima</maintainer>
+
+  <license>GPLv3</license>
+
+  <author email="olima@isr.tecnico.ulisboa.pt">Oscar Lima</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>roslint</build_depend>
+  <build_depend>tf</build_depend>
+  
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  
+  <test_depend>roslaunch</test_depend>
+</package>
