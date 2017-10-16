@@ -6,20 +6,24 @@
     <!-- ROSPlan Semantic Knowledge base ! upload and query semantic information : instances, facts or goals -->
 
     <!-- the path for the pddl domain folder -->
-    <arg name="base_path" default="$(find isr_knowledge_base)/common/pddl/example_domain" />
+    <arg name="base_path" default="$(find knowledge_base)/common/pddl/example_domain" />
 
     <!-- the full path for the domain.pddl file -->
     <arg name="domain_path" default="$(arg base_path)/domain.pddl" />
 
     <!-- the place in which mongoDB will store runtime files -->
-    <arg name="database_path" default="$(find isr_knowledge_base)/common/mongoDB" />
+    <arg name="database_path" default="$(find knowledge_base)/common/mongoDB" />
+
+    <!-- the desired ROS namespace -->
+    <arg name="namespace" default="task_planning" />
 
     <!-- mongoDB related parameters -->
     <arg name="mongodb_host" default="localhost" />
     <arg name="mongodb_port" default="27019" />    <!-- Do not use ubuntu default mongodb port : 27017-->
 
     <!-- scene database (MongoDB) -->
-    <node pkg="mongodb_store" type="mongodb_server.py" name="mongodb_server" output="screen" >
+    <node pkg="mongodb_store" type="mongodb_server.py" name="mongodb_server"
+          output="screen" ns="$(arg namespace)" >
         <param name="master" value="false"/>
         <param name="host" value="$(arg mongodb_host)" />
         <param name="port" value="$(arg mongodb_port)" />
@@ -27,12 +31,14 @@
     </node>
 
     <!-- scene database messages (MongoDB) -->
-    <param name="mongodb_host" type="str" value="$(arg mongodb_host)" />
-    <param name="mongodb_port" type="int" value="$(arg mongodb_port)" />
-    <node pkg="mongodb_store" type="message_store_node.py" name="message_store_node" output="screen" />
+    <param name="$(arg namespace)/mongodb_host" type="str" value="$(arg mongodb_host)" />
+    <param name="$(arg namespace)/mongodb_port" type="int" value="$(arg mongodb_port)" />
+    <node pkg="mongodb_store" type="message_store_node.py" name="message_store_node"
+          output="screen" ns="$(arg namespace)" />
 
     <!-- rosplan knowledge base interface-->
     <param name="/rosplan/domain_path" value="$(arg domain_path)" />
-    <node pkg="rosplan_knowledge_base" type="knowledgeBase" name="rosplan_knowledge_base" output="screen" required="true" />
+    <node pkg="rosplan_knowledge_base" type="knowledgeBase" name="rosplan_knowledge_base"
+          output="screen" required="true" ns="$(arg namespace)" />
 
 </launch>

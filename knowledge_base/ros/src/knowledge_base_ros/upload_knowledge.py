@@ -9,7 +9,7 @@ import sys
 import mercury_planner.pddl as pddl
 
 # create dictionary out of pddl vector
-import isr_knowledge_base_ros.update_knowledge_utils as utils
+import knowledge_base_ros.update_knowledge_utils as utils
 
 # for rosplan service calls
 from rosplan_knowledge_msgs.srv import KnowledgeUpdateServiceRequest

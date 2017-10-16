@@ -4,15 +4,15 @@
     <!-- NOTE : This is an example launch file, please do not modify ! -->
 
     <!-- the path to your PDDL domain -->
-    <arg name="domain_path" default="$(find isr_knowledge_base)/common/pddl/example_domain" />
-    
+    <arg name="domain_path" default="$(find knowledge_base)/common/pddl/example_domain" />
+
     <!-- the name of PDDL problem that will be loaded as instrinsic knowledge -->
     <arg name="pddl_problem" default="problem" />
 
     <!-- upload knowledge to the knowledge base from PDDL problem definition -->
-    <node   pkg="isr_knowledge_base" type="upload_pddl_knowledge_node" name="upload_pddl_knowledge_node" 
-            output="screen" args="">
-    
+    <node   pkg="knowledge_base" type="upload_pddl_knowledge_node" name="upload_pddl_knowledge_node"
+            output="screen" ns="task_planning" >
+
         <!-- the full path to your problem.pddl file -->
         <param name="pddl_file_path" value="$(arg domain_path)/problems/$(arg pddl_problem).pddl" />
 

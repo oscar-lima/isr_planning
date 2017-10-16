@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import isr_knowledge_base_ros.knowledge_base_analyzer
+import knowledge_base_ros.knowledge_base_analyzer
 
 if __name__ == '__main__':
-    isr_knowledge_base_ros.knowledge_base_analyzer.main()
+    knowledge_base_ros.knowledge_base_analyzer.main()

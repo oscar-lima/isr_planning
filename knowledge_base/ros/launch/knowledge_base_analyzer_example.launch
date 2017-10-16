@@ -4,7 +4,8 @@
     <!-- NOTE: This is an example launch file, please do not modify ! -->
 
     <!-- Knowledge base analyser, query rosplan KB to check for unfinished goals and new knowledge -->
-    <node pkg="isr_knowledge_base" type="knowledge_base_analyzer_node" name="knowledge_base_analyzer_node" output="screen" >
+    <node pkg="knowledge_base" type="knowledge_base_analyzer_node" name="knowledge_base_analyzer_node"
+          output="screen" ns="task_planning" >
 
         <!-- the node will wait for this amount of time for rosplan service to become available -->
         <param name="kb_service_timeout" value="3.0" />
