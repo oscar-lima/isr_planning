@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import plan_parse_dispatch_ros.plan_parse_dispatch
+
+if __name__ == '__main__':
+    plan_parse_dispatch_ros.plan_parse_dispatch.main()

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package>
+  <name>plan_parse_dispatch</name>
+  <version>1.0.0</version>
+  <description>
+    Parses planner output (text file with plan) into a ROS msg
+    rosplan_dispatch_msgs/CompletePlan which is a vector of n actions.
+
+    The output of this node is typically connected with an execution
+    component such as a planner executor.
+  </description>
+
+  <license>GPLv3</license>
+
+  <author email="olima@isr.tecnico.ulisboa.pt">Oscar Lima</author>
+  <maintainer email="olima@isr.tecnico.ulisboa.pt">Oscar Lima</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>rosplan_dispatch_msgs</run_depend>
+  <run_depend>diagnostic_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+</package>

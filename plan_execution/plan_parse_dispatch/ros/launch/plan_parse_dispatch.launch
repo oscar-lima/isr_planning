@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- NOTE: This is an example launch file, please do not modify ! -->
+
+  <!-- the path to the generated plan file (output of a task planner) -->
+  <arg name="plan_path" default="$(find plan_parse_dispatch)/ros/test/example_plan.plan" />
+
+  <!-- the name of the parser that you want to use -->
+  <arg name="plan_parser" default="IPC2014" />
+
+  <node pkg="plan_parse_dispatch" type="plan_parse_dispatch_node" name="plan_parse_dispatch_node"
+        output="screen" ns="task_planning" >
+    <param name="plan_path" value="$(arg plan_path)" />
+    <param name="plan_parser" value="$(arg plan_parser)" />
+  </node>
+
+</launch>
