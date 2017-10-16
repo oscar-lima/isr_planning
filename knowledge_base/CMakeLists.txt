@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(isr_knowledge_base)
+project(knowledge_base)
 
 find_package(catkin REQUIRED COMPONENTS
 )

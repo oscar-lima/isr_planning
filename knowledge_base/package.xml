@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-    <name>isr_knowledge_base</name>
+    <name>knowledge_base</name>
     <version>1.0.0</version>
     <description>
         a) Launch files for ROSPlan knowledge base.
