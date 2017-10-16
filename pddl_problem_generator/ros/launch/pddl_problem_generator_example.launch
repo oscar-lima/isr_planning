@@ -3,6 +3,8 @@
 
     <!-- NOTE : This is an example launch file, please do not modify! -->
 
+    <!-- see pddl_problem_generator/ros/test/pddl_problem_generator.test to test this pkg -->
+
     <arg name="base_path" default="$(find pddl_problem_generator)/ros/test/example_domain" />
     <arg name="domain_path" default="$(arg base_path)/domain.pddl" />
     <arg name="problem_path" default="$(arg base_path)/problems/p01.pddl" />
