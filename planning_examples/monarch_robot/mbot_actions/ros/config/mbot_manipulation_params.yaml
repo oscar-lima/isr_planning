@@ -1,8 +1,8 @@
 front_small_table:
     /mir_manipulation/pregrasp_planner_pipeline/pregrasp_planner:
-      min_azimuth: -50.0
-      max_azimuth: 50.0
-      min_zenith: 120.0
+      min_azimuth: 50.0
+      max_azimuth: 100.0
+      min_zenith: 160.0
       max_zenith: 180.0
       min_roll: -2.0
       max_roll: 2.0
