@@ -139,7 +139,7 @@ def main(mockup=False):
                 transitions={'succeeded':'MOVE_ARM_TO_PREGRASP', 'failed':'MOVE_ARM_TO_HOLD'})
 
             # move arm to pregrasp position to be ready to grasp object
-            smach.StateMachine.add('MOVE_ARM_TO_PREGRASP', gms.move_arm("pregrasp_front_table"),
+            smach.StateMachine.add('MOVE_ARM_TO_PREGRASP', gms.move_arm("pregrasp_side_table"),
                 transitions={'succeeded':'GENERATE_OBJECT_POSE', 'failed':'MOVE_ARM_TO_HOLD'})
 
             # trigger object selector, to publish object pose
@@ -161,7 +161,7 @@ def main(mockup=False):
         smach.StateMachine.add('PLAN_ARM_MOTION', gbs.send_and_wait_events_combined(
             event_in_list=[('/mir_manipulation/pregrasp_planner_pipeline/event_in','e_start')],
             event_out_list=[('/mir_manipulation/pregrasp_planner_pipeline/event_out','e_success', True)],
-            timeout_duration=20),
+            timeout_duration=60),
             transitions={'success':'STOP_PLAN_ARM_MOTION',
                               'timeout':'STOP_PLAN_ARM_MOTION_WITH_FAILURE',
                               'failure':'STOP_PLAN_ARM_MOTION_WITH_FAILURE'})
@@ -189,13 +189,17 @@ def main(mockup=False):
 
         # send stop event_in to arm motion component
         smach.StateMachine.add('STOP_MOVE_ARM_TO_OBJECT', send_event('/move_arm_planned/event_in','e_stop'),
-            transitions={'success':'CLOSE_GRIPPER'})
+            transitions={'success':'WAIT_FOR_ARM_TO_OBJECT'})
+
+	# sleep for a bit to allow time for arm to get to final pose
+	smach.StateMachine.add('WAIT_FOR_ARM_TO_OBJECT', cs.Sleep(2),
+	    transitions={'success':'CLOSE_GRIPPER'})
 
         smach.StateMachine.add('CLOSE_GRIPPER', cs.PublishtoTopic('/left_arm_gripper/gripper_command', GripperCommand, GripperCommand(1)),
             transitions={'success': 'MOVE_ARM_TO_HOLD'})
 
         # move arm to HOLD position
-        smach.StateMachine.add('MOVE_ARM_TO_HOLD', gms.move_arm("pregrasp"),
+        smach.StateMachine.add('MOVE_ARM_TO_HOLD', gms.move_arm("pregrasp_side_table"),
             transitions={'succeeded':'SET_ROBOT_FACE_TO_HAPPINESS', 'failed':'MOVE_ARM_TO_HOLD'})
 
         # set a Happiness face on the robot (robot is happy to achieve the goal)
