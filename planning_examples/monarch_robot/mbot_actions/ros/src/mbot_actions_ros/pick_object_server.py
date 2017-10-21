@@ -139,7 +139,7 @@ def main(mockup=False):
                 transitions={'succeeded':'MOVE_ARM_TO_PREGRASP', 'failed':'MOVE_ARM_TO_HOLD'})
 
             # move arm to pregrasp position to be ready to grasp object
-            smach.StateMachine.add('MOVE_ARM_TO_PREGRASP', gms.move_arm("pregrasp_side_table"),
+            smach.StateMachine.add('MOVE_ARM_TO_PREGRASP', gms.move_arm("pregrasp_top_table"),
                 transitions={'succeeded':'GENERATE_OBJECT_POSE', 'failed':'MOVE_ARM_TO_HOLD'})
 
             # trigger object selector, to publish object pose
@@ -199,7 +199,7 @@ def main(mockup=False):
             transitions={'success': 'MOVE_ARM_TO_HOLD'})
 
         # move arm to HOLD position
-        smach.StateMachine.add('MOVE_ARM_TO_HOLD', gms.move_arm("pregrasp_side_table"),
+        smach.StateMachine.add('MOVE_ARM_TO_HOLD', gms.move_arm("pregrasp_top_table"),
             transitions={'succeeded':'SET_ROBOT_FACE_TO_HAPPINESS', 'failed':'MOVE_ARM_TO_HOLD'})
 
         # set a Happiness face on the robot (robot is happy to achieve the goal)
