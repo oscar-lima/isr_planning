@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import planner_executor_ros.planner_executor_node
+
+if __name__ == '__main__':
+ planner_executor_ros.planner_executor_node.main()

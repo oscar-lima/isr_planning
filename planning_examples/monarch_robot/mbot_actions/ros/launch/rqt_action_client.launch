@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-
-    <!-- rqt gui to command robot action clients -->
-    <arg name="yaml_config_file" default="$(find mbot_actions)/ros/config/robot_actions.yaml" />
-
-    <node pkg="rqt_gui" type="rqt_gui" name="rqt_mbot_actions" args="-s rqt_action_client --args $(arg yaml_config_file)" />
-
-</launch>

@@ -1,6 +1,0 @@
-#!/usr/bin/env python
-
-import mbot_actions_ros.ask_question_server
-
-if __name__ == '__main__':
-    mbot_actions_ros.ask_question_server.main()
