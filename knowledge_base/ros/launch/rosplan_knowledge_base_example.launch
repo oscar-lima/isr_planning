@@ -5,8 +5,14 @@
 
     <!-- ROSPlan Semantic Knowledge base ! upload and query semantic information : instances, facts or goals -->
 
+    <!-- the name of your robot (in case you are using planning_examples pkg) -->
+    <arg name="robot" default="example_robot" />
+
+    <!-- the name of your domain (in case you are using planning_examples pkg) -->
+    <arg name="domain" default="cleaning_robot" />
+
     <!-- the path for the pddl domain folder -->
-    <arg name="base_path" default="$(find knowledge_base)/common/pddl/example_domain" />
+    <arg name="base_path" default="$(find planning_domains)/common/$(arg robot)/pddl/$(arg domain)" />
 
     <!-- the full path for the domain.pddl file -->
     <arg name="domain_path" default="$(arg base_path)/domain.pddl" />
