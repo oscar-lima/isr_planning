@@ -8,7 +8,7 @@
  * 
  */
 
-#include <mcr_task_planning_tools/run_script_node.h>
+#include <mcr_run_script_tool/run_script_node.h>
 #include <string>
 #include <vector>
 
@@ -85,9 +85,9 @@ void RunScriptNode::update()
     is_event_in_received_ = false;
 
     // checking for event in msg content
-    if (event_in_msg_.data != "e_trigger")
+    if (event_in_msg_.data != "e_start")
     {
-        ROS_ERROR("Received unsupported event: %s", event_in_msg_.data.c_str());
+        ROS_ERROR("Received unsupported event: %s, admissible values are: e_start", event_in_msg_.data.c_str());
         return;
     }
 
