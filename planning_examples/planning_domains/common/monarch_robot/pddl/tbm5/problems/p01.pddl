@@ -9,19 +9,20 @@
   )
 
   (:init
+  	(= (total-cost) 0)
   	(at mbot entrance)
   	(on crackers dinner_table)
   	(on coke dinner_table)
   	(holding package mbot)
   	(not (gripper_empty mbot))
-  	(= (total-cost) 0)
   ) 
 
   (:goal
   	(and
   		(on crackers side_table)
 	  	(gripper_empty mbot)
-		;(at mbot entrance)
+		(at mbot entrance)
+		(perceived bedroom)
 	)
   )
 )

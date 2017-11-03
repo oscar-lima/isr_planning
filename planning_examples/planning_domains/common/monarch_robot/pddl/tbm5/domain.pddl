@@ -11,10 +11,20 @@
   ; (:constants (xrobot - robot)
 
   (:predicates
+    ; robot ?r is at location ?l
     (at ?r - robot ?l - location)
+
+    ; object ?o is on location ?l
     (on ?o - object ?l - location)
+
+    ; robot ?r is holding object ?o
     (holding ?o - object ?r - robot)
+
+    ; the gripper of the robot ?r is free (does not contain any object)
     (gripper_empty ?r - robot)
+
+    ; trigger the perceive capabilities in order to find an object
+    (perceived ?l - location)
   ) 
 
   (:functions
@@ -30,34 +40,30 @@
                   (and (on ?o ?destination) (not (on ?o ?source)) )
                 )
               )
-              (increase (total-cost) 1)
+              (increase (total-cost) 2)
             )
   )
 
-   (:action grasp
+   (:action pick
       :parameters (?g_object - object ?r - robot ?l - location)
       :precondition (and (at ?r ?l) (on ?g_object ?l) (not (holding ?g_object ?r)) (gripper_empty ?r))
       :effect (and (holding ?g_object ?r) (not (gripper_empty ?r)) (increase (total-cost) 1))
     )
 
 
-   (:action ungrasp
+   (:action place
       :parameters (?g_object - object ?r - robot ?l - location)
       :precondition (and (at ?r ?l) (on ?g_object ?l) (holding ?g_object ?r) (not (gripper_empty ?r)))
       :effect (and (not (holding ?g_object ?r)) (gripper_empty ?r) (increase (total-cost) 1))
     )
 
-;??
-   ; (:action find
-   ;    :parameters (?f_object - object ?r - robot ?l - location)
-   ;    :precondition (at ?r ?l)
-   ;    :effect (on ?f_object ?l)
-   ;  )
-
-
+   (:action find
+      :parameters (?r - robot ?l - location)
+      :precondition (at ?r ?l)
+      :effect (and (perceived ?l) (increase (total-cost) 1))
+    )
 
   ;TODO
-  ; find person - action find (object person)
   ; tell the time - action speak (information time, date, etc)
   ; ask a question - action question (object empty)
   ; ask the name of the person - action quesion (object name)
