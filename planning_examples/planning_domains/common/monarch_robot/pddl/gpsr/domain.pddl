@@ -39,7 +39,7 @@
 
     ; a person is knowleadgeable now, because his question was answered
     (iluminated ?p)
-  ) 
+  )
 
   (:functions
      (total-cost) - number
@@ -98,7 +98,8 @@
   (:action guide
     :parameters (?p - person ?source ?destination - location ?r - robot)
     :precondition (and (at_p ?p ?source) (at_r ?r ?source) (found ?p))
-    :effect (and (at_p ?p ?destination) (at_r ?r ?destination) (increase (total-cost) 1))
+    :effect (and (at_p ?p ?destination) (at_r ?r ?destination)
+                 (not (at_p ?p ?source)) (not (at_r ?r ?source)) (increase (total-cost) 500))
   )
 
   ; HRI action
