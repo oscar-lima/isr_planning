@@ -16,11 +16,11 @@
     ; person ?p is at location ?l
     (at_p ?p - person ?l - location)
 
-    ; object ?o is on location ?l
-    (on ?o - object ?l - location)
+    ; object ?obj is on location ?l
+    (on ?obj - object ?l - location)
 
-    ; robot ?r is holding object ?o
-    (holding ?o - object ?r - robot)
+    ; robot ?r is holding object ?obj
+    (holding ?obj - object ?r - robot)
 
     ; the gripper of the robot ?r is free (does not contain any object)
     (gripper_empty ?r - robot)
@@ -51,9 +51,9 @@
     :parameters (?source ?destination - location ?r - robot)
     :precondition (at_r ?r ?source)
     :effect (and (at_r ?r ?destination) (not (at_r ?r ?source))
-              (forall (?o - object)
-                (when (holding ?o ?r)
-                  (and (on ?o ?destination) (not (on ?o ?source)) )
+              (forall (?obj - object)
+                (when (holding ?obj ?r)
+                  (and (on ?obj ?destination) (not (on ?obj ?source)) )
                 )
               )
               (increase (total-cost) 2)
@@ -63,9 +63,9 @@
   ; manipulation action
   ; i.e. grasp the energy drink
   (:action grasp
-    :parameters (?o - object ?l - location ?r - robot)
-    :precondition (and (at_r ?r ?l) (on ?o ?l) (not (holding ?o ?r)) (gripper_empty ?r))
-    :effect (and (holding ?o ?r) (not (gripper_empty ?r)) (increase (total-cost) 1))
+    :parameters (?obj - object ?l - location ?r - robot)
+    :precondition (and (at_r ?r ?l) (on ?obj ?l) (not (holding ?obj ?r)) (gripper_empty ?r))
+    :effect (and (holding ?obj ?r) (not (gripper_empty ?r)) (increase (total-cost) 1))
   )
 
   ; manipulation action
