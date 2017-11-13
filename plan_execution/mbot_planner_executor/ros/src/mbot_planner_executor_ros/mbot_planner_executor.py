@@ -12,10 +12,8 @@ from mbot_action_msgs.msg import PickObjectAction, PickObjectGoal
 from mbot_action_msgs.msg import PerceiveLocationAction, PerceiveLocationGoal
 from mbot_action_msgs.msg import PlaceAction, PlaceGoal
 
-
-
 # functions to upload facts, goals into the knowledge base
-from mcr_knowledge_ros import upload_knowledge
+from knowledge_base_ros import upload_knowledge
 
 class MbotPlannerExecutor(object):
     '''

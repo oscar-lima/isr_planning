@@ -9,8 +9,9 @@
   <arg name="domain" default="cleaning_robot_with_cost" />
   <arg name="problem" default="example_problem" />
 
-  <arg name="domain_path" default="$(find planning_domains)/common/$(arg robot)/pddl/$(arg domain)/domain.pddl" />
-  <arg name="problem_path" default="$(find planning_domains)/common/$(arg robot)/pddl/$(arg domain)/problems/$(arg problem).pddl" />
+  <arg name="base_path" default="$(find planning_domains)/common/$(arg robot)/pddl/$(arg domain)" />
+  <arg name="domain_path" default="$(arg base_path)/domain.pddl" />
+  <arg name="problem_path" default="$(arg base_path)/problems/$(arg problem).pddl" />
 
   <arg name="mercury_planner_base_path" default="$(find mercury_planner)/build/Mercury-fixed/seq-sat-mercury" />
   <arg name="timeout" default="10.0" /> <!-- the maximum amount of time for the planner to produce a plan in seconds-->
