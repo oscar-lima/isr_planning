@@ -32,7 +32,7 @@
     (known_p ?r - robot ?p - person)
 
     ; the robot know the person
-    (known_r ?r - person ?r - robot)
+    (known_r ?p - person ?r - robot)
 
     ; a person is puzzled and hungry for aswers
     (puzzled ?p - person)
