@@ -50,7 +50,7 @@
   (:action move_base
     :parameters (?source ?destination - location ?r - robot)
     :precondition  (at_r ?r ?source)
-    :effect   (and (at_r ?r ?destination) (not (at_r ?r ?source)) (increase (total-cost) 2))
+    :effect   (and (at_r ?r ?destination) (not (at_r ?r ?source)) (increase (total-cost) 4))
   )
 
   ; manipulation action
@@ -92,7 +92,7 @@
     :parameters (?p - person ?source ?destination - location ?r - robot)
     :precondition (and (at_p ?p ?source) (at_r ?r ?source) (found ?p))
     :effect (and (at_p ?p ?destination) (at_r ?r ?destination)
-                 (not (at_p ?p ?source)) (not (at_r ?r ?source)) (increase (total-cost) 500))
+                 (not (at_p ?p ?source)) (not (at_r ?r ?source)) (increase (total-cost) 4))
   )
 
   ; HRI action
@@ -110,6 +110,3 @@
     :effect (and (known_r ?p ?r) (increase (total-cost) 1))
   )
 )
-
-; to test this domain:
-; rosrun ffha ffha -o domain.pddl -f problems/p01.pddl
