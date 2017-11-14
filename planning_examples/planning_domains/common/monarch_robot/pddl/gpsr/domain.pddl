@@ -49,23 +49,16 @@
   ; i.e. move to the hallway table
   (:action move_base
     :parameters (?source ?destination - location ?r - robot)
-    :precondition (at_r ?r ?source)
-    :effect (and (at_r ?r ?destination) (not (at_r ?r ?source))
-              (forall (?obj - object)
-                (when (holding ?obj ?r)
-                  (and (on ?obj ?destination) (not (on ?obj ?source)) )
-                )
-              )
-              (increase (total-cost) 2)
-            )
+    :precondition  (at_r ?r ?source)
+    :effect   (and (at_r ?r ?destination) (not (at_r ?r ?source)) (increase (total-cost) 2))
   )
 
   ; manipulation action
   ; i.e. grasp the energy drink
   (:action grasp
     :parameters (?obj - object ?l - location ?r - robot)
-    :precondition (and (at_r ?r ?l) (on ?obj ?l) (not (holding ?obj ?r)) (gripper_empty ?r))
-    :effect (and (holding ?obj ?r) (not (gripper_empty ?r)) (increase (total-cost) 1))
+    :precondition (and (at_r ?r ?l) (on ?obj ?l) (gripper_empty ?r))
+    :effect (and (holding ?obj ?r) (not (on ?obj ?l)) (not (gripper_empty ?r)) (increase (total-cost) 1))
   )
 
   ; manipulation action
@@ -73,8 +66,8 @@
   ; i.e. place the pringles on the table
   (:action place
     :parameters (?obj - object ?l - location ?r - robot)
-    :precondition (and (at_r ?r ?l) (on ?obj ?l) (holding ?obj ?r) (not (gripper_empty ?r)))
-    :effect (and (not (holding ?obj ?r)) (gripper_empty ?r) (increase (total-cost) 1))
+    :precondition (and (at_r ?r ?l) (holding ?obj ?r) (not (gripper_empty ?r)))
+    :effect (and (not (holding ?obj ?r)) (on ?obj ?l) (gripper_empty ?r) (increase (total-cost) 1))
   )
 
   ; perception action
