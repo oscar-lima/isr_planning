@@ -35,10 +35,10 @@
     (known_r ?r - person ?r - robot)
 
     ; a person is puzzled and hungry for aswers
-    (puzzled ?p)
+    (puzzled ?p - person)
 
     ; a person is knowleadgeable now, because his question was answered
-    (iluminated ?p)
+    (iluminated ?p - person)
   )
 
   (:functions
