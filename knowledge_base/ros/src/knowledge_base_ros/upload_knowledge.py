@@ -52,7 +52,7 @@ class UploadPDDLKnowledge(object):
         # subscribe to event_in std_msgs/String topic to start uploading the knowledge
         rospy.Subscriber("~event_in", String, self.eventInCallBack, queue_size=1)
         # to publish feedback on event_out topic
-        self.even_out_pub = rospy.Publisher('~even_out', String, queue_size=1)
+        self.even_out_pub = rospy.Publisher('~event_out', String, queue_size=1)
         rospy.loginfo('Upload PDDL knowledge node initialized... waiting for event_in to upload knowledge')
 
     def rosplan_update_knowledge(self, knowledge_type, instance_type, instance_name, attribute_name, values, function_value=0.0, update_type='ADD_KNOWLEDGE'):
