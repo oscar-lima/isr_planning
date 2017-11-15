@@ -8,11 +8,11 @@
 
     ; robots
   	r--mbot - robot ; there is only one robot called mbot
-    
+
     ; locations
     l--hallway - location
     l--bedroom l--wardrobe l--bed l--nightstand - location
-    l--living_room l--bookshelf l--coffee_table l--sidetable couch - location
+    l--living_room l--bookshelf l--coffee_table l--sidetable l--couch - location
     l--dining_room l--dining_table - location
     l--kitchen l--kitchen_table l--kitchen_cabinet - location
 
@@ -32,7 +32,7 @@
   (:init
 
     ; the robot at start is in the entrance of the house
-  	(at_r r--mbot l--entrance)
+  	(at_r r--mbot l--hallway)
 
     ; the robot gripper is empty at the start
     (gripper_empty r--mbot)
