@@ -5,21 +5,6 @@ import rospy
 # the path to pddl problem file
 import sys
 
-# # pddl parser, reads pddl file and outputs pddl vector
-# import mercury_planner.pddl as pddl
-
-# # create dictionary out of pddl vector
-# import knowledge_base_ros.update_knowledge_utils as utils
-
-# # for rosplan service calls
-# from rosplan_knowledge_msgs.srv import KnowledgeUpdateServiceRequest
-# from rosplan_knowledge_msgs.srv import KnowledgeUpdateService
-# from rosplan_knowledge_msgs.msg import KnowledgeItem
-# from diagnostic_msgs.msg import KeyValue
-
-# # to ADD_FACTS
-# from rosplan_knowledge_msgs.srv import rosplan_knowledge_msgs
-
 # for the event_in callback
 from std_msgs.msg import String
 
@@ -28,23 +13,15 @@ import knowledge_base_ros.upload_knowledge as upld
 
 class nlu_knowledge_upload(object):
     def __init__(self):
+        # flag to indicate that a event msg was received in the callback
+        self.event_in_received = False
+
         # rospy.init_node('nlu_knowledge_uploader', anonymous=False)
         #subscribe to mbot_nlu_node -> natural_language_processing
-        #rospy.Subscriber("/mbot_nlu_node/natural_language_processing", String, self.nluCallback)
+        rospy.Subscriber("/mbot_nlu_node/natural_language_processing", String, self.nluCallback)
 
-        # self.intention_list = ('go', 'grasp', 'bring')
-        # self.intention_dict = {}
-        # self.z = 0
-        # for x in self.intention_list: # construct the dict based on the intention list
-        #     self.intention_dict[x] = self.z
-        #     self.z = self.z+1
-
-        # self.slot_list = ('kitchen', 'coke', 'dinner_table')
-        # self.slot_dict = {}
-        # self.z = 0
-        # for x in self.slot_list: # construct the dict based on the intention list
-        #     self.slot_dict[x] = self.z
-        #     self.z = self.z+1
+        # get from param server the frequency at which this node will run
+        self.loop_rate = rospy.Rate(rospy.get_param('~loop_rate', 10.0))
 
         self.intention_to_action = {'go':'move_base' , 'grasp':'grasp', 'meet':'introduce' , 'take':'place' , 'guide':'guide' , 'find':'find_person' , 'tell':'tell' , 'answer':'answer_question' }
         self.action_to_predicate = {'move_base':'at_r' , 'grasp':'holding', 'place':'on', 'find_person':'found', 'introduce':'known_p', 'guide':'at_p', 'answer_question':'iluminated' , 'tell':'told'}
@@ -124,63 +101,75 @@ class nlu_knowledge_upload(object):
 
         return self.attribute_name, self.value
 
-    # def nluCallback(self, msg):
-    #     '''
-    #     This fuction will get executed upon receiving a msg on natural_language_processing topic
-    #     '''
-    #     # parse the message in phrases
-    #     # map the intenttions and slots
-    #     # upload to the knowledgebase
 
-    #     sentence_recognized = msg.data
+    def nluCallback(self, msg):
+        '''
+        This fuction will get executed upon receiving a msg on natural_language_processing topic
 
-    #     for phrase in sentence_recognized:
+        Example of nlu output msg:
+        recognized_action: take
+        slot: ['coke is an object', 'kitchen is a destination']
+        recognized_action: go
+        slot: ['living room is a destination']
+        recognized_action: find
+        slot: ['person and is an object']
+        recognized_action: tell
+        slot: ['what time is what to tell']
+        '''   
+        self.sentence_recognized = msg.data
+        self.event_in_received = True
+
+
+    def start_nlu_mapper(self):
+        while not rospy.is_shutdown():
+            if self.event_in_received == True:
+                # lower flag
+                self.event_in_received = False
+
+                sentence_recognized = msg.data
+                
+                # parse the message in phrases
+                for phrase in sentence_recognized:
+                    slot = []
+                    for i in range(len(phrase.reconized_slot)):
+                        slot.append( phrase[1][i].split(' is')[0] )
+
+                    # map the intenttions and slots
+                    attribute_name, value = self.map_nlu_to_predicates(phrase.recognized_action, slot)
+
+                    # upload to the knowledgebase
+                    nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
+
+
+            self.loop_rate.sleep()
+
+
+def main():
+    rospy.init_node('upload_pddl_knowledge_node', anonymous=False)
+    nlu_knowledge_uploader = upld.UploadPDDLKnowledge()
+
+    map_test = nlu_knowledge_upload()
+
+    map_test.start_nlu_mapper()
+
+    #DEBUG
+
+    # sentence_recognized = [['go', ['living room is a destination']],
+    #                        ['take', ['coke is an object', 'kitchen is a destination']], ['meet', ['']],
+    #                        ['find', ['person and is an object']], ['tell', ['what time is what to tell']]]
+
+    # sentence_recognized = [['go', ['sidetable is a destination']],
+    #                        ['take', ['coke is an object', 'kitchen is a destination']], ['answer', ['']],
+    #                        ['find', ['alexander is a person', 'and is an object']] ]
+
+    # for phrase in sentence_recognized:
     #     slot = []
     #     for i in range(len(phrase[1])):
     #         slot.append( phrase[1][i].split(' is')[0] )
 
     #     attribute_name, value = map_test.map_nlu_to_predicates(phrase[0], slot)
 
-
-def main():
-    print 'Hey'
-    rospy.init_node('upload_pddl_knowledge_node', anonymous=False)
-    print 'end'
-    nlu_knowledge_uploader = upld.UploadPDDLKnowledge()
-    print 'upld'
-
-    map_test = nlu_knowledge_upload()   
-
-    #rospy.spin()
-
-    #DEBUG
-
-    # Example of nlu output msg
-    # recognized_action: take
-    # slot: ['coke is an object', 'kitchen is a destination']
-    # recognized_action: go
-    # slot: ['living room is a destination']
-    # recognized_action: find
-    # slot: ['person and is an object']
-    # recognized_action: tell
-    # slot: ['what time is what to tell']
-
-    # sentence_recognized = [['go', ['living room is a destination']],
-    #                        ['take', ['coke is an object', 'kitchen is a destination']], ['meet', ['']],
-    #                        ['find', ['person and is an object']], ['tell', ['what time is what to tell']]]
-
-    sentence_recognized = [['go', ['sidetable is a destination']],
-                           ['take', ['coke is an object', 'kitchen is a destination']], ['answer', ['']],
-                           ['find', ['alexander is a person', 'and is an object']] ]
-
-    for phrase in sentence_recognized:
-        slot = []
-        for i in range(len(phrase[1])):
-            slot.append( phrase[1][i].split(' is')[0] )
-
-        attribute_name, value = map_test.map_nlu_to_predicates(phrase[0], slot)
-
-        nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
+    #     nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
 
         # if (is a GOAL):
         #     nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
@@ -189,7 +178,6 @@ def main():
 
     # print attribute_name
     # print value
-    print 'update kb'
 
     #DEBUG
     
