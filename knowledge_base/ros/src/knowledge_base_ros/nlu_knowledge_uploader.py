@@ -65,8 +65,10 @@ class nlu_knowledge_upload(object):
         self.value = []
         for argument in reconized_slot:
             if(argument in self.slot_to_type):
-                # if (self.attribute_name == 'holding')
                 self.value.append( [self.slot_to_type[argument] , argument] )
+
+                if (self.attribute_name == 'holding'): # hardcode while issue #80 is not solved - after this line can be removed
+                    self.value.append( ['robot', 'mbot'] )
 
         return self.attribute_name, self.value
 
@@ -127,14 +129,15 @@ def main():
     nlu_knowledge_uploader = upld.UploadPDDLKnowledge()
     print 'upld'
 
-    sentence_recognized = [ ['go' , ['mbot', 'b', 'madsa']] , ['grasp', ['coke']]]
+    sentence_recognized = [ ['go' , ['mbot', 'b', 'madsa']] , ['grasp', ['coke']] , ['introduce', ['']]]
 
-    map_test = nlu_knowledge_upload()
+    map_test = nlu_knowledge_upload()   
 
 
     for phrase in sentence_recognized:
         attribute_name, value = map_test.map_nlu_to_predicates(phrase[0], phrase[1])
 
+        #DEBUG
         nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_KNOWLEDGE')
 
         # if (is a GOAL):
