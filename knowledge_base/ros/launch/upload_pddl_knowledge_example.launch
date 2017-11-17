@@ -3,13 +3,13 @@
 
   <!-- NOTE : This is an example launch file, please do not modify ! -->
 
-  <!-- the name of your robot (in case you are using planning_examples pkg) -->
+  <!-- the name of your robot, in case you are using planning_examples pkg -->
   <arg name="robot" default="example_robot" />
 
-  <!-- the name of your domain (in case you are using planning_examples pkg) -->
+  <!-- the name of your domain, in case you are using planning_examples pkg -->
   <arg name="domain" default="cleaning_robot" />
 
-  <!-- the name of your domain (in case you are using planning_examples pkg) -->
+  <!-- the name of your domain, in case you are using planning_examples pkg -->
   <arg name="problem" default="example_problem" />
 
   <!-- the path for the pddl domain folder -->

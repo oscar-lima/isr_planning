@@ -5,10 +5,10 @@
 
     <!-- ROSPlan Semantic Knowledge base ! upload and query semantic information : instances, facts or goals -->
 
-    <!-- the name of your robot (in case you are using planning_examples pkg) -->
+    <!-- the name of your robot in case you are using planning_examples pkg -->
     <arg name="robot" default="example_robot" />
 
-    <!-- the name of your domain (in case you are using planning_examples pkg) -->
+    <!-- the name of your domain in case you are using planning_examples pkg -->
     <arg name="domain" default="cleaning_robot" />
 
     <!-- the path for the pddl domain folder -->

@@ -16,11 +16,11 @@
     ; person ?p is at location ?l
     (at_p ?p - person ?l - location)
 
-    ; object ?o is on location ?l
-    (on ?o - object ?l - location)
+    ; object ?obj is on location ?l
+    (on ?obj - object ?l - location)
 
-    ; robot ?r is holding object ?o
-    (holding ?o - object ?r - robot)
+    ; robot ?r is holding object ?obj
+    (holding ?obj - object ?r - robot)
 
     ; the gripper of the robot ?r is free (does not contain any object)
     (gripper_empty ?r - robot)
@@ -32,13 +32,13 @@
     (known_p ?r - robot ?p - person)
 
     ; the robot know the person
-    (known_r ?r - person ?r - robot)
+    (known_r ?p - person ?r - robot)
 
     ; a person is puzzled and hungry for aswers
-    (puzzled ?p)
+    (puzzled ?p - person)
 
     ; a person is knowleadgeable now, because his question was answered
-    (iluminated ?p)
+    (iluminated ?p - person)
   )
 
   (:functions
@@ -49,23 +49,16 @@
   ; i.e. move to the hallway table
   (:action move_base
     :parameters (?source ?destination - location ?r - robot)
-    :precondition (at_r ?r ?source)
-    :effect (and (at_r ?r ?destination) (not (at_r ?r ?source))
-              (forall (?o - object)
-                (when (holding ?o ?r)
-                  (and (on ?o ?destination) (not (on ?o ?source)) )
-                )
-              )
-              (increase (total-cost) 2)
-            )
+    :precondition  (at_r ?r ?source)
+    :effect   (and (at_r ?r ?destination) (not (at_r ?r ?source)) (increase (total-cost) 4))
   )
 
   ; manipulation action
   ; i.e. grasp the energy drink
   (:action grasp
-    :parameters (?o - object ?l - location ?r - robot)
-    :precondition (and (at_r ?r ?l) (on ?o ?l) (not (holding ?o ?r)) (gripper_empty ?r))
-    :effect (and (holding ?o ?r) (not (gripper_empty ?r)) (increase (total-cost) 1))
+    :parameters (?obj - object ?l - location ?r - robot)
+    :precondition (and (at_r ?r ?l) (on ?obj ?l) (gripper_empty ?r))
+    :effect (and (holding ?obj ?r) (not (on ?obj ?l)) (not (gripper_empty ?r)) (increase (total-cost) 1))
   )
 
   ; manipulation action
@@ -73,8 +66,8 @@
   ; i.e. place the pringles on the table
   (:action place
     :parameters (?obj - object ?l - location ?r - robot)
-    :precondition (and (at_r ?r ?l) (on ?obj ?l) (holding ?obj ?r) (not (gripper_empty ?r)))
-    :effect (and (not (holding ?obj ?r)) (gripper_empty ?r) (increase (total-cost) 1))
+    :precondition (and (at_r ?r ?l) (holding ?obj ?r) (not (gripper_empty ?r)))
+    :effect (and (not (holding ?obj ?r)) (on ?obj ?l) (gripper_empty ?r) (increase (total-cost) 1))
   )
 
   ; perception action
@@ -99,7 +92,7 @@
     :parameters (?p - person ?source ?destination - location ?r - robot)
     :precondition (and (at_p ?p ?source) (at_r ?r ?source) (found ?p))
     :effect (and (at_p ?p ?destination) (at_r ?r ?destination)
-                 (not (at_p ?p ?source)) (not (at_r ?r ?source)) (increase (total-cost) 500))
+                 (not (at_p ?p ?source)) (not (at_r ?r ?source)) (increase (total-cost) 4))
   )
 
   ; HRI action
@@ -117,6 +110,3 @@
     :effect (and (known_r ?p ?r) (increase (total-cost) 1))
   )
 )
-
-; to test this domain:
-; rosrun ffha ffha -o domain.pddl -f problems/p01.pddl
