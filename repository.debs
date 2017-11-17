@@ -17,6 +17,7 @@ packagelist=(
   unzip
   pypy
   ros-${DISTRO}-catkin-lint
+  ros-${DISTRO}-mongodb-store
 )
 
 ### install debian packages listed in array above
