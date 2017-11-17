@@ -6,7 +6,7 @@ import rospy
 import sys
 
 # for the event_in callback
-from std_msgs.msg import String
+from mbot_nlu.msg import action_slot_array
 
 import knowledge_base_ros.upload_knowledge as upld
 
@@ -16,9 +16,11 @@ class nlu_knowledge_upload(object):
         # flag to indicate that a event msg was received in the callback
         self.event_in_received = False
 
+        self.nlu_knowledge_uploader = upld.UploadPDDLKnowledge()
+
         # rospy.init_node('nlu_knowledge_uploader', anonymous=False)
         #subscribe to mbot_nlu_node -> natural_language_processing
-        rospy.Subscriber("/mbot_nlu_node/natural_language_processing", String, self.nluCallback)
+        rospy.Subscriber("natural_language_understanding/recognized_intention", action_slot_array, self.nluCallback)
 
         # get from param server the frequency at which this node will run
         self.loop_rate = rospy.Rate(rospy.get_param('~loop_rate', 10.0))
@@ -115,8 +117,8 @@ class nlu_knowledge_upload(object):
         slot: ['person and is an object']
         recognized_action: tell
         slot: ['what time is what to tell']
-        '''   
-        self.sentence_recognized = msg.data
+        '''
+        self.sentence_recognized = msg.sentence_recognition
         self.event_in_received = True
 
 
@@ -125,29 +127,28 @@ class nlu_knowledge_upload(object):
             if self.event_in_received == True:
                 # lower flag
                 self.event_in_received = False
-
-                sentence_recognized = msg.data
                 
                 # parse the message in phrases
-                for phrase in sentence_recognized:
+                for phrase in self.sentence_recognized:
                     slot = []
-                    for i in range(len(phrase.reconized_slot)):
-                        slot.append( phrase[1][i].split(' is')[0] )
+                    for arg in phrase.slot:
+                        slot.append(arg.split(' is')[0])
 
+                    print ("intention and slot !!")
+                    print phrase.recognized_action
+                    print slot
+                    print "------"
                     # map the intenttions and slots
                     attribute_name, value = self.map_nlu_to_predicates(phrase.recognized_action, slot)
 
                     # upload to the knowledgebase
-                    nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
-
+                    self.nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
 
             self.loop_rate.sleep()
 
 
 def main():
     rospy.init_node('upload_pddl_knowledge_node', anonymous=False)
-    nlu_knowledge_uploader = upld.UploadPDDLKnowledge()
-
     map_test = nlu_knowledge_upload()
 
     map_test.start_nlu_mapper()

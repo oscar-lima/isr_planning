@@ -31,8 +31,8 @@
     ; after robot has introduced himself it becames known to the person
     (known_p ?r - robot ?p - person)
 
-    ; the robot know the person
-    (known_r ?p - person ?r - robot)
+    ; the robot told what was asked to tell
+    (told ?p - person ?r - robot)
 
     ; a person is puzzled and hungry for aswers
     (puzzled ?p - person)
@@ -104,9 +104,10 @@
   )
 
   ; HRI action
-  (:action ask_name
+  ; i.e. ask his name; tell John to wait a moment
+  (:action tell
     :parameters (?p - person ?l - location ?r - robot)
     :precondition (and (at_p ?p ?l) (at_r ?r ?l) (found ?p))
-    :effect (and (known_r ?p ?r) (increase (total-cost) 1))
+    :effect (and (told ?p ?r) (increase (total-cost) 1))
   )
 )
