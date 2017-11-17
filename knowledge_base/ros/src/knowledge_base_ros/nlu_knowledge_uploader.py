@@ -46,9 +46,11 @@ class nlu_knowledge_upload(object):
         #     self.slot_dict[x] = self.z
         #     self.z = self.z+1
 
+
         # self.intention_dict = {'go':'move_base' , 'grasp':'grasp', 'put':'place', 'find':'find_person', 'introduce':'introduce', 'guide':'guide', '':'answer_question', '':'ask_name'}
-        self.intention_to_action = {'go':'move_base' , 'grasp':'grasp', 'put':'place', 'bring':'place', 'find':'find_person', 'introduce':'introduce', 'guide':'guide'}
-        self.action_to_predicate = {'move_base':'at_r' , 'grasp':'holding', 'place':'on', 'find_person':'found', 'introduce':'known_p', 'guide':'at_p', 'answer_question':'iluminated' , 'ask_name':'known_r'}
+        #self.intention_to_action = {'go':'move_base' , 'grasp':'grasp', 'put':'place', 'bring':'place', 'find':'find_person', 'introduce':'introduce', 'guide':'guide'}
+        self.intention_to_action = {'go':'move_base' , 'grasp':'grasp', 'meet':'introduce' , 'take':'place' , 'guide':'guide' , 'find':'find_person' , 'tell':'tell' , 'answer':'answer_question' }
+        self.action_to_predicate = {'move_base':'at_r' , 'grasp':'holding', 'place':'on', 'find_person':'found', 'introduce':'known_p', 'guide':'at_p', 'answer_question':'iluminated' , 'tell':'told'}
         #? - nove_base, guide, place
 
         self.slot_to_type = {'b':'location', 'kitchen':'location' , 'dinner_table':'location', 'entrance':'location', 'coke':'object', 'milk':'object', 'mbot':'robot', 'John':'person', 'Lucy':'person'}
