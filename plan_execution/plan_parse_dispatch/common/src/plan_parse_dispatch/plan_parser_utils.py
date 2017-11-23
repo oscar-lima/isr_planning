@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-Neutral = [0,0]
-
 def convert_IPC2014_plan_file_to_list(plan_path):
     '''
     Load a plan file (in IPC2014 format) and convert into a list
