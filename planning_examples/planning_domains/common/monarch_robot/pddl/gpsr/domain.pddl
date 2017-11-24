@@ -39,6 +39,9 @@
 
     ; a person is knowleadgeable now, because his question was answered
     (iluminated ?p - person)
+
+    ; the robot is following the person
+    (following ?r - robot ?p - person)
   )
 
   (:functions
@@ -109,5 +112,13 @@
     :parameters (?p - person ?l - location ?r - robot)
     :precondition (and (at_p ?p ?l) (at_r ?r ?l) (found ?p))
     :effect (and (told ?p ?r) (increase (total-cost) 1))
+  )
+
+  ; HRI action
+  ; i.e. follow a person
+  (:action follow
+    :parameters (?p - person ?l - location ?r - robot)
+    :precondition (and (at_p ?p ?l) (at_r ?r ?l) (found ?p))
+    :effect (and (following ?r ?p) (increase (total-cost) 4))
   )
 )

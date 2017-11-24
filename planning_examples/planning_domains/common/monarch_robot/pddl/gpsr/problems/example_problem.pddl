@@ -47,11 +47,11 @@
       ; robot needs to be at the entrance at the end
 		  (at_r mbot entrance)
 
-      ; robot needs to ask pedro his name
+      ; robot needs to introduce itself to pedro
       (known_p mbot pedro)
 
-      ; mbot needs to introduce itself to pedro
-      (known_r pedro mbot)
+      ; mbot needs to tell to pedro what was asked
+      (told pedro mbot)
 
       ; pedro needs to be guided to the exit
       (at_p pedro exit)
@@ -64,6 +64,8 @@
 
       ; pedro is puzzled and needs his question to be answered
       (iluminated pedro)
+
+      (following mbot pedro)
 	  )
   )
 
