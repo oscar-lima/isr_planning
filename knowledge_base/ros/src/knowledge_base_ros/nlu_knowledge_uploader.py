@@ -12,7 +12,7 @@ import knowledge_base_ros.upload_knowledge as upld
 class nlu_knowledge_upload(object):
     def __init__(self):
         # flag to indicate that a event msg was received in the callback
-        self.event_in_received = False
+        self.msg_received = False
 
         # instatiate the UploadPDDLKnowledge so we can make useo use the rosplan_update_knowledge upload method
         self.nlu_knowledge_uploader = upld.UploadPDDLKnowledge()
@@ -143,14 +143,15 @@ class nlu_knowledge_upload(object):
                     # print phrase.recognized_action
                     # print slot
                     # print "------"
+                    
+                    if (not not slot):
+                        # map the intentions and slots to predicates and types
+                        attribute_name, value = self.map_nlu_to_pddl_domain(phrase.recognized_action, slot)
 
-                    # map the intentions and slots to predicates and types
-                    attribute_name, value = self.map_nlu_to_pddl_domain(phrase.recognized_action, slot)
-
-                    # upload the translated goals to the knowledgebase
-                    # the 'ADD_GOAL' flag sets these attributes to be uploaded as goals. Use the flag 'ADD_KNOWLEDGE' to upload as facts.
-                    # use 'REMOVE_KNOWLEDGE' and 'REMOVE_GOAL' to remove facts and goals, respectively.
-                    self.nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
+                        # upload the translated goals to the knowledgebase
+                        # the 'ADD_GOAL' flag sets these attributes to be uploaded as goals. Use the flag 'ADD_KNOWLEDGE' to upload as facts.
+                        # use 'REMOVE_KNOWLEDGE' and 'REMOVE_GOAL' to remove facts and goals, respectively.
+                        self.nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
 
             # sleep the node for a predefined period of time to decrease the node resources load
             self.loop_rate.sleep()
