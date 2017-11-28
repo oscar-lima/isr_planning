@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 import rospy
 
-# for reading arguments comming into this function, in this case is for receiving
-# the path to pddl problem file
 import sys
 
-# for the event_in callback
+# for the msg_received in the nluCallback
 from mbot_nlu.msg import action_slot_array
 
 import knowledge_base_ros.upload_knowledge as upld
@@ -14,19 +12,24 @@ import knowledge_base_ros.upload_knowledge as upld
 class nlu_knowledge_upload(object):
     def __init__(self):
         # flag to indicate that a event msg was received in the callback
-        self.event_in_received = False
+        self.msg_received = False
 
+        # instatiate the UploadPDDLKnowledge so we can make useo use the rosplan_update_knowledge upload method
         self.nlu_knowledge_uploader = upld.UploadPDDLKnowledge()
 
-        # rospy.init_node('nlu_knowledge_uploader', anonymous=False)
-        #subscribe to mbot_nlu_node -> natural_language_processing
+        # subscribe to recognized_intention topic that is publiched by natural_language_understanding node
         rospy.Subscriber("natural_language_understanding/recognized_intention", action_slot_array, self.nluCallback)
 
-        # get from param server the frequency at which this node will run
+        # get from param server the frequency at which this node will pool incoming messages
         self.loop_rate = rospy.Rate(rospy.get_param('~loop_rate', 10.0))
 
+        # dictionary that translates between the nlu intention output and the corresponding actions on the pddl domain
         self.intention_to_action = {'go':'move_base' , 'grasp':'grasp', 'meet':'introduce' , 'take':'place' , 'guide':'guide' , 'find':'find_person' , 'tell':'tell' , 'answer':'answer_question' }
+        
+        # dictionary that translates between the actions on the pddl domain and the corresponding predicates on the pddl domain
         self.action_to_predicate = {'move_base':'at_r' , 'grasp':'holding', 'place':'on', 'find_person':'found', 'introduce':'known_p', 'guide':'at_p', 'answer_question':'iluminated' , 'tell':'told'}
+        
+        # dictionary that translates between the nlu slot output and the corresponding types on the pddl domain
         self.slot_to_type = {'summer': 'person', 'madison': 'person', 'freddie': 'person', 'bananas': 'object', 'office': 'location',
                             'lewis': 'person', 'laptop': 'object', 'charles': 'person', 'toby': 'person', 'thomas': 'person',
                             'joshua': 'person', 'peaches': 'object', 'iced tea': 'object', 'logan': 'person', 'bedside': 'location',
@@ -87,12 +90,13 @@ class nlu_knowledge_upload(object):
                             'mason':'person', 'alexander':'person', 'isabella':'person', 'ava':'person'}
 
 
-    def map_nlu_to_predicates(self, reconized_intention, reconized_slot):
+    def map_nlu_to_pddl_domain(self, reconized_intention, reconized_slot):
+        # mapping the recognized intention (output from the nlu) to the corresponding predicate of the pddl domain
         if(reconized_intention in self.intention_to_action):
             if(self.intention_to_action[reconized_intention] in self.action_to_predicate):
                 self.attribute_name = self.action_to_predicate[self.intention_to_action[reconized_intention]]
 
-
+        # mapping the recognized slots (output from the nlu) to the corresponding types of the pddl domain
         self.value = []
         for argument in reconized_slot:
             if(argument in self.slot_to_type):
@@ -119,84 +123,46 @@ class nlu_knowledge_upload(object):
         slot: ['what time is what to tell']
         '''
         self.sentence_recognized = msg.sentence_recognition
-        self.event_in_received = True
+        self.msg_received = True # this flag is set true everytime a new message is published on the recognized_intention topic
 
 
-    def start_nlu_mapper(self):
+    def start_nlu_translate_upload(self):
         while not rospy.is_shutdown():
-            if self.event_in_received == True:
-                # lower flag
-                self.event_in_received = False
+            if self.msg_received == True:
+                # reset the flag
+                self.msg_received = False
                 
-                # parse the message in phrases
+                # parse the message in phrases so each phrase can be translated into the pddl attributes and uploaded
                 for phrase in self.sentence_recognized:
                     slot = []
                     for arg in phrase.slot:
-                        slot.append(arg.split(' is')[0])
+                        slot.append(arg.split(' is')[0]) # split each argument by the ' is' keyword and use only the first block e.g. in ['living room is a destination'] we just retrieve 'living room'
 
-                    print ("intention and slot !!")
-                    print phrase.recognized_action
-                    print slot
-                    print "------"
-                    # map the intenttions and slots
-                    attribute_name, value = self.map_nlu_to_predicates(phrase.recognized_action, slot)
+                    # DEBUG prints
+                    # print ("intention and slot !!")
+                    # print phrase.recognized_action
+                    # print slot
+                    # print "------"
+                    
+                    if (not not slot):
+                        # map the intentions and slots to predicates and types
+                        attribute_name, value = self.map_nlu_to_pddl_domain(phrase.recognized_action, slot)
 
-                    # upload to the knowledgebase
-                    self.nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
+                        # upload the translated goals to the knowledgebase
+                        # the 'ADD_GOAL' flag sets these attributes to be uploaded as goals. Use the flag 'ADD_KNOWLEDGE' to upload as facts.
+                        # use 'REMOVE_KNOWLEDGE' and 'REMOVE_GOAL' to remove facts and goals, respectively.
+                        self.nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
 
+            # sleep the node for a predefined period of time to decrease the node resources load
             self.loop_rate.sleep()
 
 
 def main():
+    # launch the upload_pddl_knowledge_node so we are able to upload knowledge to the knowledgbase
     rospy.init_node('upload_pddl_knowledge_node', anonymous=False)
-    map_test = nlu_knowledge_upload()
 
-    map_test.start_nlu_mapper()
+    # instantiate the nlu_knowledge_upload class in the nlu_knowledge_upload_obj object
+    nlu_knowledge_upload_obj = nlu_knowledge_upload()
 
-    #DEBUG
-
-    # sentence_recognized = [['go', ['living room is a destination']],
-    #                        ['take', ['coke is an object', 'kitchen is a destination']], ['meet', ['']],
-    #                        ['find', ['person and is an object']], ['tell', ['what time is what to tell']]]
-
-    # sentence_recognized = [['go', ['sidetable is a destination']],
-    #                        ['take', ['coke is an object', 'kitchen is a destination']], ['answer', ['']],
-    #                        ['find', ['alexander is a person', 'and is an object']] ]
-
-    # for phrase in sentence_recognized:
-    #     slot = []
-    #     for i in range(len(phrase[1])):
-    #         slot.append( phrase[1][i].split(' is')[0] )
-
-    #     attribute_name, value = map_test.map_nlu_to_predicates(phrase[0], slot)
-
-    #     nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
-
-        # if (is a GOAL):
-        #     nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
-        # elif(is a FACT):
-        #     nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_KNOWLEDGE')
-
-    # print attribute_name
-    # print value
-
-    #DEBUG
-    
-
-# rosservice call /kcl_rosplan/update_knowledge_base "update_type: 1
-# knowledge:
-#   knowledge_type: 1
-#   instance_type: ''
-#   instance_name: ''
-#   attribute_name: 'at'
-#   values:
-#   - {key: 'o', value: 'mbot'}
-#   - {key: 'l', value: 'b'}
-#   function_value: 0.0
-#   is_negative: false" 
-
-#     (knowledge_type, instance_type, instance_name, attribute_name, values, function_value=0.0, update_type='ADD_KNOWLEDGE')
-
-    # rospy.init_node('upload_pddl_knowledge_node', anonymous=False)
-    # pddl_knowledge_uploader = UploadPDDLKnowledge()
-    # pddl_knowledge_uploader.start_knowledge_uploader()
+    # trigger the translation and upload to the knowledgebase process
+    nlu_knowledge_upload_obj.start_nlu_translate_upload()
