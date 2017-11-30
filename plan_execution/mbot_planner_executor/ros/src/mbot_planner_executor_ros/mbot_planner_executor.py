@@ -215,10 +215,21 @@ class MbotPlannerExecutor(object):
         return True
 
     def answer_question(self):
+        self.speech_string = None
+        mbot.say("I am ready to answer your question.")
         question = self.speech_string
-        answer = self.gpsr_dict[question]
-        mbot.say(answer)
-        
+        while question == None:
+            rospy.loginfo('waiting for question')
+            question = self.speech_string
+            rospy.sleep(0.5)
+        if question in gpsr_dict:
+            answer = self.gpsr_dict[question]
+            self.speech_string = None
+            mbot.say(answer)
+        else:
+            mbpt.say("Sorry, I do not know your answer")
+        return True
+    
     def update_kb_move_base(self, source, destination, robot, success=True):
         """
         1.  robot is no longer at start if accion succeded removing this predicate from knowledge base
