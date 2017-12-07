@@ -3,7 +3,6 @@
   (:domain gpsr) ; General Purpose Service Robot (in a home environment)
 
   (:objects
-  	mbot - robot                             ; there is only one robot called mbot
     pedro person - person
   	entrance bedroom kitchen exit - location ; room locations
     dinner_table side_table - location       ; manipulation locations
@@ -16,10 +15,10 @@
   	(= (total-cost) 0)
 
     ; the robot at start is in the entrance of the house
-  	(at_r mbot entrance)
+  	(at_r entrance)
 
     ; the robot gripper is empty
-    (gripper_empty mbot)
+    (gripper_empty)
 
     ; a person is at the kitchen
     (at_p person kitchen)
@@ -42,16 +41,16 @@
   		(on crackers side_table)
 
       ; the gripper of the robot needs to be empty at the end
-	  	(gripper_empty mbot)
+	  	(gripper_empty)
 
       ; robot needs to be at the entrance at the end
-		  (at_r mbot entrance)
+		  (at_r entrance)
 
       ; robot needs to introduce itself to pedro
-      (known_p mbot pedro)
+      (known_p pedro)
 
       ; mbot needs to tell to pedro what was asked
-      (told pedro mbot)
+      (told pedro)
 
       ; pedro needs to be guided to the exit
       (at_p pedro exit)
@@ -65,7 +64,7 @@
       ; pedro is puzzled and needs his question to be answered
       (iluminated pedro)
 
-      (following mbot pedro)
+      (following pedro)
 	  )
   )
 
