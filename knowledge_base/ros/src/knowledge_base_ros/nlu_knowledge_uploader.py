@@ -4,7 +4,7 @@ import rospy
 import sys
 
 # for the msg_received in the nluCallback
-from mbot_nlu.msg import action_slot_array
+from mbot_nlu.msg import ActionSlotArray
 
 import knowledge_base_ros.upload_knowledge as upld
 
@@ -18,7 +18,7 @@ class nlu_knowledge_upload(object):
         self.nlu_knowledge_uploader = upld.UploadPDDLKnowledge()
 
         # subscribe to recognized_intention topic that is publiched by natural_language_understanding node
-        rospy.Subscriber("natural_language_understanding/recognized_intention", action_slot_array, self.nluCallback)
+        rospy.Subscriber("natural_language_understanding/recognized_intention", ActionSlotArray, self.nluCallback)
 
         # get from param server the frequency at which this node will pool incoming messages
         self.loop_rate = rospy.Rate(rospy.get_param('~loop_rate', 10.0))
@@ -41,7 +41,7 @@ class nlu_knowledge_upload(object):
                             'coffee': 'object', 'rose': 'person', 'blackberries': 'object', 'food': 'object', 'luke': 'person',
                             'samuel': 'person', 'fridge': 'location', 'oranges': 'object', 'amy': 'person', 'barbara': 'person',
                             'dryer': 'object', 'watermelon': 'object', 'jack': 'person', 'desk': 'location', 'jacob': 'person',
-                            'bar': 'location', 'chips': 'object', 'bread': 'object', 'towel': 'object', 'onion': 'object',
+                            'bar': 'l', 'chips': 'object', 'bread': 'object', 'towel': 'object', 'onion': 'object',
                             'sofa': 'location', 'dinning table': 'location', 'cider': 'object', 'alice': 'person', 'candy': 'object',
                             'eleanor': 'person', 'arthur': 'person', 'rosie': 'person', 'knife': 'object', 'james': 'person',
                             'biscuits': 'object', 'glasses': 'object', 'louis': 'person', 'cookies': 'object', 'isabelle': 'person',
@@ -151,7 +151,7 @@ class nlu_knowledge_upload(object):
                         # upload the translated goals to the knowledgebase
                         # the 'ADD_GOAL' flag sets these attributes to be uploaded as goals. Use the flag 'ADD_KNOWLEDGE' to upload as facts.
                         # use 'REMOVE_KNOWLEDGE' and 'REMOVE_GOAL' to remove facts and goals, respectively.
-                        self.nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, 0.0, 'ADD_GOAL')
+                        self.nlu_knowledge_uploader.rosplan_update_knowledge(1, '', '', attribute_name, value, function_value=0.0, update_type='ADD_GOAL')
 
             # sleep the node for a predefined period of time to decrease the node resources load
             self.loop_rate.sleep()

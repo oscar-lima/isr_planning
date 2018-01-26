@@ -336,7 +336,7 @@ class MbotPlannerExecutor(object):
                 else:
                     rospy.logerr('explain action failed')
                     return
-            elif action.name == 'find_person'
+            elif action.name == 'find_person':
                 rospy.loginfo('requesting find_person action from actionlib server : place')
                 if self.find_person(duration=150.0):
                     self.update_kb_find_person(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value,
