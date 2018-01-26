@@ -42,7 +42,7 @@ class nlu_knowledge_upload(object):
                             'samuel': 'person', 'fridge': 'location', 'oranges': 'object', 'amy': 'person', 'barbara': 'person',
                             'dryer': 'object', 'watermelon': 'object', 'jack': 'person', 'desk': 'location', 'jacob': 'person',
                             'bar': 'l', 'chips': 'object', 'bread': 'object', 'towel': 'object', 'onion': 'object',
-                            'sofa': 'location', 'dinning table': 'location', 'cider': 'object', 'alice': 'person', 'candy': 'object',
+                            'sofa': 'location', 'dining_table': 'location', 'cider': 'object', 'alice': 'person', 'candy': 'object',
                             'eleanor': 'person', 'arthur': 'person', 'rosie': 'person', 'knife': 'object', 'james': 'person',
                             'biscuits': 'object', 'glasses': 'object', 'louis': 'person', 'cookies': 'object', 'isabelle': 'person',
                             'knifes': 'object', 'tea': 'object', 'almond': 'object', 'lucy': 'person', 'bowls': 'object',
@@ -51,7 +51,7 @@ class nlu_knowledge_upload(object):
                             'chewing gums': 'object', 'closet': 'location', 'harvey': 'person', 'alex': 'person', 'emma': 'person',
                             'pen': 'object', 'daniel': 'person', 'living table': 'location', 'yogurt': 'object', 'forks': 'object',
                             'choth': 'object', 'mints': 'object', 'blackberry': 'object', 'ken': 'person', 'pepper': 'object',
-                            'living room': 'location', 'rum': 'object', 'harry': 'person', 'lotion': 'object',
+                            'living_room': 'location', 'rum': 'object', 'harry': 'person', 'lotion': 'object',
                             'toothbrush': 'object', 'cake': 'object', 'snack': 'object', 'cookie': 'object', 'sink': 'location',
                             'grapes': 'object', 'brooke': 'person', 'comb': 'object', 'sophie': 'person',
                             'chocolate tablet': 'object', 'kitchen': 'location', 'water': 'object', 'bedroom chair': 'location',
@@ -83,10 +83,10 @@ class nlu_knowledge_upload(object):
                             'cloth': 'object', 'charger': 'object', 'toiletries': 'object', 'counter': 'location', 'seth': 'person',
                             'adam': 'person', 'bottle': 'object', 'olivia': 'person', 'elliot': 'person', 'paige': 'person',
                             'salt': 'object', 'wine': 'object', 'nightstand':'location', 'hallway':'location', 'wardrobe':'location',
-                            'bookshelf':'location', 'coffee table':'location', 'sidetable':'location', 'dinning room':'location',
-                            'dinning room':'location', 'kitchen table':'location', 'kitchen cabinet':'location', 'rice':'object',
-                            'kleenex':'object', 'whiteboard cleaner':'object', 'cup':'object', 'drink':'object', 'food':'object',
-                            'cleaning stuff':'object', 'mia':'person', 'liam':'person', 'sophia':'person', 'abigail':'person',
+                            'bookshelf':'location', 'coffee table':'location', 'sidetable':'location', 'dining_room':'location',
+                            'kitchen_table':'location', 'kitchen_cabinet':'location', 'rice':'object',
+                            'kleenex':'object', 'whiteboard_cleaner':'object', 'cup':'object', 'drink':'object', 'food':'object',
+                            'cleaning_stuff':'object', 'mia':'person', 'liam':'person', 'sophia':'person', 'abigail':'person',
                             'mason':'person', 'alexander':'person', 'isabella':'person', 'ava':'person'}
 
 
