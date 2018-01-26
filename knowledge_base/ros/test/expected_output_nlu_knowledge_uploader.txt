@@ -1,0 +1,15 @@
+at_r hallway table
+at_r dinner table
+at_r outside
+at_r cabinet
+at_r pantry
+at_r stove
+at_r bed
+find person
+known_p person
+at_r bar
+at_r couch table
+at_r outside
+at_r kitchen counter
+at_r dresser
+at_r dinner table
