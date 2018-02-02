@@ -1,17 +1,22 @@
 #!/usr/bin/env python
 import rospy
 import mbot_world_model_ros.gpsr_dict
-
+import rospkg
 
 class generate_knowledge(object):
 	def __init__(self):
+		rospack = rospkg.RosPack()
+
 		# get the save file path from the parameter server
-		self.path = rospy.get_param("/min_req_facts_path", "/home/carlos/ros_ws/src/isr_planning/planning_examples/planning_domains/common/monarch_robot/pddl/gpsr/problems")
+		self.path = rospy.get_param("min_req_facts_path", rospack.get_path('planning_domains'))
+		self.path = self.path + '/common/monarch_robot/pddl/gpsr/problems'
+		# get file_name
+		self.file_name = rospy.get_param("min_req_facts_file_name", '/minimum_required_facts.pddl')
 		# get the dictionary from the gpsr_dict file under mbot_world_model
 		self.slots_dict = mbot_world_model_ros.gpsr_dict.slots_dict
 
 	def gen_min_req_facts(self):
-		mrf_file = open(self.path+'minimum_required_facts.pddl', 'w')
+		mrf_file = open(self.path+self.file_name, 'w')
 
 		mrf_file.write('(define (problem minimum_required_facts)\n')
 		mrf_file.write('\t(:domain gpsr) ; General Purpose Service Robot (in a home environment)\n')
