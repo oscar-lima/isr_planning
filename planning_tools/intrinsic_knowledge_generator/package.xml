@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+ <name>intrinsic_knowledge_generator</name>
+ <version>1.0.0</version>
+ <description>
+ TODO!
+ </description>
+
+ <license>GPLv3</license>
+
+ <author email="cguerraazevedo@tecnico.ulisboa.pt">Carlos Azevedo</author>
+ <maintainer email="cguerraazevedo@tecnico.ulisboa.pt">Carlos Azevedo</maintainer>
+
+ <buildtool_depend>catkin</buildtool_depend>
+
+ <build_depend>TODO</build_depend>
+
+ <run_depend>TODO</run_depend>
+
+</package>
