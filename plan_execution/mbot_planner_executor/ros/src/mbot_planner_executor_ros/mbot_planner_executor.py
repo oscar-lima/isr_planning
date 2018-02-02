@@ -115,7 +115,7 @@ class MbotPlannerExecutor(object):
             #     return self.replan()
             # else:
             #     return True
-            success = mbot.go_to_location(destination)
+            success = self.mbot.navigation.go_to_location(destination)
             if success:
                 return True
             else:
@@ -207,16 +207,16 @@ class MbotPlannerExecutor(object):
             return False
 
     def introduce(self, timeout):
-        self.mbot.say('Hello. My name is mbot and I am the robot from the SocRob team.')
+        self.mbot.hri.say('Hello. My name is mbot and I am the robot from the SocRob team.')
         return True
 
     def ask_name(self):
-        self.mbot.say('What is your name?')
+        self.mbot.hri.say('What is your name?')
         return True
 
     def answer_question(self):
         self.speech_string = None
-        mbot.say("I am ready to answer your question.")
+        self.mbot.hri.say("I am ready to answer your question.")
         question = self.speech_string
         while question == None:
             rospy.loginfo('waiting for question')
@@ -225,9 +225,9 @@ class MbotPlannerExecutor(object):
         if question in gpsr_dict:
             answer = self.gpsr_dict[question]
             self.speech_string = None
-            mbot.say(answer)
+            self.mbot.hri.say(answer)
         else:
-            mbpt.say("Sorry, I do not know your answer")
+            self.mbot.hri.say("Sorry, I do not know your answer")
         return True
     
     def update_kb_move_base(self, source, destination, robot, success=True):
@@ -402,6 +402,6 @@ class MbotPlannerExecutor(object):
 
 
 def main():
-    rospy.init_node('mbot_planner_executor', anonymous=False)
+    rospy.init_node('mbot_planner_executor', anonymous=False, log_level=rospy.INFO)
     mbot_planner_executor = MbotPlannerExecutor()
     mbot_planner_executor.start_mbot_planner_executor()

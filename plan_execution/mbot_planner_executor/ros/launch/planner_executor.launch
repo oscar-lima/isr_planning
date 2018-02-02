@@ -8,7 +8,7 @@
     <arg name="namespace" default="task_planning" />
 
     <!-- the topic that the planner executor will listen to -->
-    <arg name="plan_topic" default="$(arg namespace)/plan_parse_dispatch_node/plan" />
+    <arg name="plan_topic" default="plan_parse_dispatch_node/plan" />
 
     <!-- the topic that the planner executor will listen to -->
     <arg name="speech_recognition_topic" default="recognized_speech" />

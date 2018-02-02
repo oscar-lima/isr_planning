@@ -1,0 +1,30 @@
+recognized_action: go
+slot: ['hallway table is a destination']
+recognized_action: go
+slot: ['dinner table is a destination']
+recognized_action: go
+slot: ['outside is a destination']
+recognized_action: go
+slot: ['cabinet is a destination']
+recognized_action: go
+slot: ['pantry is a destination']
+recognized_action: go
+slot: ['stove is a destination']
+recognized_action: go
+slot: ['bed is a destination']
+recognized_action: find
+slot: ['person is a person']
+recognized_action: meet
+slot: ['']
+recognized_action: go
+slot: ['bar is a destination']
+recognized_action: go
+slot: ['couch table is a destination']
+recognized_action: go
+slot: ['outside is a destination']
+recognized_action: go
+slot: ['kitchen counter is a destination']
+recognized_action: go
+slot: ['dresser is a destination']
+recognized_action: go
+slot: ['dinner table is a destination']

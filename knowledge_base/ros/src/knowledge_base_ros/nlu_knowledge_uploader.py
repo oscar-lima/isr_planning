@@ -30,65 +30,64 @@ class nlu_knowledge_upload(object):
         self.action_to_predicate = {'move_base':'at_r' , 'grasp':'holding', 'place':'on', 'find_person':'found', 'introduce':'known_p', 'guide':'at_p', 'answer_question':'iluminated' , 'tell':'told'}
         
         # dictionary that translates between the nlu slot output and the corresponding types on the pddl domain
-        self.slot_to_type = {'summer': 'person', 'madison': 'person', 'freddie': 'person', 'bananas': 'object', 'office': 'location',
-                            'lewis': 'person', 'laptop': 'object', 'charles': 'person', 'toby': 'person', 'thomas': 'person',
-                            'joshua': 'person', 'peaches': 'object', 'iced tea': 'object', 'logan': 'person', 'bedside': 'location',
-                            'harrison': 'person', 'bedroom': 'location', 'faith': 'person', 'milk': 'object', 'emily': 'person',
-                            'blake': 'person', 'blueberries': 'object', 'pens': 'object', 'ham': 'object', 'tablet': 'object',
-                            'matthew': 'person', 'peanut': 'object', 'noah': 'person', 'josh': 'person', 'sugar': 'object',
-                            'TV stand': 'location', 'center table': 'location', 'ethan': 'person', 'orange': 'object',
-                            'peanuts': 'object', 'manju': 'object', 'scarlett': 'person', 'theo': 'person', 'plate': 'object',
-                            'coffee': 'object', 'rose': 'person', 'blackberries': 'object', 'food': 'object', 'luke': 'person',
-                            'samuel': 'person', 'fridge': 'location', 'oranges': 'object', 'amy': 'person', 'barbara': 'person',
-                            'dryer': 'object', 'watermelon': 'object', 'jack': 'person', 'desk': 'location', 'jacob': 'person',
-                            'bar': 'l', 'chips': 'object', 'bread': 'object', 'towel': 'object', 'onion': 'object',
-                            'sofa': 'location', 'dining_table': 'location', 'cider': 'object', 'alice': 'person', 'candy': 'object',
-                            'eleanor': 'person', 'arthur': 'person', 'rosie': 'person', 'knife': 'object', 'james': 'person',
-                            'biscuits': 'object', 'glasses': 'object', 'louis': 'person', 'cookies': 'object', 'isabelle': 'person',
-                            'knifes': 'object', 'tea': 'object', 'almond': 'object', 'lucy': 'person', 'bowls': 'object',
-                            'daisy': 'person', 'sponge': 'object', 'burger': 'object', 'almonds': 'object', 'ryan': 'person',
-                            'erika': 'person', 'noodles': 'object', 'william': 'person', 'container': 'object',
-                            'chewing gums': 'object', 'closet': 'location', 'harvey': 'person', 'alex': 'person', 'emma': 'person',
-                            'pen': 'object', 'daniel': 'person', 'living table': 'location', 'yogurt': 'object', 'forks': 'object',
-                            'choth': 'object', 'mints': 'object', 'blackberry': 'object', 'ken': 'person', 'pepper': 'object',
-                            'living_room': 'location', 'rum': 'object', 'harry': 'person', 'lotion': 'object',
-                            'toothbrush': 'object', 'cake': 'object', 'snack': 'object', 'cookie': 'object', 'sink': 'location',
-                            'grapes': 'object', 'brooke': 'person', 'comb': 'object', 'sophie': 'person',
-                            'chocolate tablet': 'object', 'kitchen': 'location', 'water': 'object', 'bedroom chair': 'location',
-                            'tommy': 'person', 'tray': 'object', 'biscuit': 'object', 'jackie': 'person', 'magazine': 'object',
-                            'bookcase': 'location', 'donuts': 'object', 'emilia': 'person', 'amber': 'person', 'cheese': 'object',
-                            'henry': 'person', 'apple': 'object', 'sideshelf': 'location', 'charlotte': 'person',
-                            'sienna': 'person', 'michael': 'person', 'magazines': 'object', 'chewing gum': 'object',
-                            'apples': 'object', 'table': 'location', 'kitchen chair': 'location', 'florence': 'person',
-                            'trays': 'object', 'katie': 'person', 'sarah': 'person', 'bathroom': 'location', 'oliver': 'person',
-                            'isaac': 'person', 'sake': 'object', 'toothpaste': 'object', 'aaron': 'person', 'beer': 'object',
-                            'edward': 'person', 'amelie': 'person', 'jane': 'person', 'john': 'person', 'blueberry': 'object',
-                            'containers': 'object', 'fork': 'object', 'pencil': 'object', 'paprika': 'object', 'door': 'location',
-                            'sprite': 'object', 'cereals bar': 'object', 'oscar': 'person', 'coke': 'object', 'jamie': 'person',
-                            'cabinet': 'location', 'glass': 'object', 'strawberries': 'object', 'lemons': 'object',
-                            'amelia': 'person', 'grace': 'person', 'whisky': 'object', 'hot chocolate': 'object',
-                            'nathan': 'person', 'drawer': 'location', 'hanna': 'person', 'shampoo': 'object', 'bed': 'location',
-                            'banana': 'object', 'will': 'person', 'strawberry': 'object', 'books': 'object', 'lemonade': 'object',
-                            'can': 'object', 'charlie': 'person', 'newspaper': 'object', 'crackers': 'object',
-                            'newspapers': 'object', 'erik': 'person', 'toilet': 'location', 'vodka': 'object', 'chloe': 'person',
-                            'snacks': 'object', 'candies': 'object', 'sushi': 'object', 'senbei': 'object', 'pie': 'object',
-                            'juice': 'object', 'cans': 'object', 'onions': 'object', 'ivy': 'person', 'cream': 'object',
-                            'peter': 'person', 'lemon': 'object', 'zoe': 'person', 'peach': 'object', 'bowl': 'object',
-                            'couch': 'location', 'brian': 'person', 'book': 'object', 'corridor': 'location', 'plates': 'object',
-                            'martha': 'person', 'lily': 'person', 'soap': 'object', 'pringles': 'object', 'pizza': 'object',
-                            'cupboard': 'location', 'chocolate bar': 'object', 'samantha': 'person', 'ella': 'person',
-                            'drink': 'object', 'pear': 'object', 'dylan': 'person', 'chocolate egg': 'object', 'tyler': 'person',
-                            'notebook': 'object', 'evan': 'person', 'toilet paper': 'object', 'connor': 'person',
-                            'bottles': 'object', 'red bull': 'object', 'max': 'person', 'joseph': 'person', 'skyler': 'person',
-                            'cloth': 'object', 'charger': 'object', 'toiletries': 'object', 'counter': 'location', 'seth': 'person',
-                            'adam': 'person', 'bottle': 'object', 'olivia': 'person', 'elliot': 'person', 'paige': 'person',
-                            'salt': 'object', 'wine': 'object', 'nightstand':'location', 'hallway':'location', 'wardrobe':'location',
-                            'bookshelf':'location', 'coffee table':'location', 'sidetable':'location', 'dining_room':'location',
-                            'kitchen_table':'location', 'kitchen_cabinet':'location', 'rice':'object',
-                            'kleenex':'object', 'whiteboard_cleaner':'object', 'cup':'object', 'drink':'object', 'food':'object',
-                            'cleaning_stuff':'object', 'mia':'person', 'liam':'person', 'sophia':'person', 'abigail':'person',
-                            'mason':'person', 'alexander':'person', 'isabella':'person', 'ava':'person'}
-
+        self.slot_to_type = {'summer': 'p', 'madison': 'p', 'freddie': 'p', 'bananas': 'obj', 'office': 'l',
+                                    'lewis': 'p', 'laptop': 'obj', 'charles': 'p', 'toby': 'p', 'thomas': 'p',
+                                    'joshua': 'p', 'peaches': 'obj', 'iced tea': 'obj', 'logan': 'p', 'bedside': 'l',
+                                    'harrison': 'p', 'bedroom': 'l', 'faith': 'p', 'milk': 'obj', 'emily': 'p',
+                                    'blake': 'p', 'blueberries': 'obj', 'pens': 'obj', 'ham': 'obj', 'tablet': 'obj',
+                                    'matthew': 'p', 'peanut': 'obj', 'noah': 'p', 'josh': 'p', 'sugar': 'obj',
+                                    'TV stand': 'l', 'center table': 'l', 'ethan': 'p', 'orange': 'obj',
+                                    'peanuts': 'obj', 'manju': 'obj', 'scarlett': 'p', 'theo': 'p', 'plate': 'obj',
+                                    'coffee': 'obj', 'rose': 'p', 'blackberries': 'obj', 'food': 'obj', 'luke': 'p',
+                                    'samuel': 'p', 'fridge': 'l', 'oranges': 'obj', 'amy': 'p', 'barbara': 'p',
+                                    'dryer': 'obj', 'watermelon': 'obj', 'jack': 'p', 'desk': 'l', 'jacob': 'p',
+                                    'bar': 'l', 'chips': 'obj', 'bread': 'obj', 'towel': 'obj', 'onion': 'obj',
+                                    'sofa': 'l', 'dining_table': 'l', 'cider': 'obj', 'alice': 'p', 'candy': 'obj',
+                                    'eleanor': 'p', 'arthur': 'p', 'rosie': 'p', 'knife': 'obj', 'james': 'p',
+                                    'biscuits': 'obj', 'glasses': 'obj', 'louis': 'p', 'cookies': 'obj', 'isabelle': 'p',
+                                    'knifes': 'obj', 'tea': 'obj', 'almond': 'obj', 'lucy': 'p', 'bowls': 'obj',
+                                    'daisy': 'p', 'sponge': 'obj', 'burger': 'obj', 'almonds': 'obj', 'ryan': 'p',
+                                    'erika': 'p', 'noodles': 'obj', 'william': 'p', 'container': 'obj',
+                                    'chewing gums': 'obj', 'closet': 'l', 'harvey': 'p', 'alex': 'p', 'emma': 'p',
+                                    'pen': 'obj', 'daniel': 'p', 'living table': 'l', 'yogurt': 'obj', 'forks': 'obj',
+                                    'choth': 'obj', 'mints': 'obj', 'blackberry': 'obj', 'ken': 'p', 'pepper': 'obj',
+                                    'living_room': 'l', 'rum': 'obj', 'harry': 'p', 'lotion': 'obj',
+                                    'toothbrush': 'obj', 'cake': 'obj', 'snack': 'obj', 'cookie': 'obj', 'sink': 'l',
+                                    'grapes': 'obj', 'brooke': 'p', 'comb': 'obj', 'sophie': 'p',
+                                    'chocolate tablet': 'obj', 'kitchen': 'l', 'water': 'obj', 'bedroom chair': 'l',
+                                    'tommy': 'p', 'tray': 'obj', 'biscuit': 'obj', 'jackie': 'p', 'magazine': 'obj',
+                                    'bookcase': 'l', 'donuts': 'obj', 'emilia': 'p', 'amber': 'p', 'cheese': 'obj',
+                                    'henry': 'p', 'apple': 'obj', 'sideshelf': 'l', 'charlotte': 'p',
+                                    'sienna': 'p', 'michael': 'p', 'magazines': 'obj', 'chewing gum': 'obj',
+                                    'apples': 'obj', 'table': 'l', 'kitchen chair': 'l', 'florence': 'p',
+                                    'trays': 'obj', 'katie': 'p', 'sarah': 'p', 'bathroom': 'l', 'oliver': 'p',
+                                    'isaac': 'p', 'sake': 'obj', 'toothpaste': 'obj', 'aaron': 'p', 'beer': 'obj',
+                                    'edward': 'p', 'amelie': 'p', 'jane': 'p', 'john': 'p', 'blueberry': 'obj',
+                                    'containers': 'obj', 'fork': 'obj', 'pencil': 'obj', 'paprika': 'obj', 'door': 'l',
+                                    'sprite': 'obj', 'cereals bar': 'obj', 'oscar': 'p', 'coke': 'obj', 'jamie': 'p',
+                                    'cabinet': 'l', 'glass': 'obj', 'strawberries': 'obj', 'lemons': 'obj',
+                                    'amelia': 'p', 'grace': 'p', 'whisky': 'obj', 'hot chocolate': 'obj',
+                                    'nathan': 'p', 'drawer': 'l', 'hanna': 'p', 'shampoo': 'obj', 'bed': 'l',
+                                    'banana': 'obj', 'will': 'p', 'strawberry': 'obj', 'books': 'obj', 'lemonade': 'obj',
+                                    'can': 'obj', 'charlie': 'p', 'newspaper': 'obj', 'crackers': 'obj',
+                                    'newspapers': 'obj', 'erik': 'p', 'toilet': 'l', 'vodka': 'obj', 'chloe': 'p',
+                                    'snacks': 'obj', 'candies': 'obj', 'sushi': 'obj', 'senbei': 'obj', 'pie': 'obj',
+                                    'juice': 'obj', 'cans': 'obj', 'onions': 'obj', 'ivy': 'p', 'cream': 'obj',
+                                    'peter': 'p', 'lemon': 'obj', 'zoe': 'p', 'peach': 'obj', 'bowl': 'obj',
+                                    'couch': 'l', 'brian': 'p', 'book': 'obj', 'corridor': 'l', 'plates': 'obj',
+                                    'martha': 'p', 'lily': 'p', 'soap': 'obj', 'pringles': 'obj', 'pizza': 'obj',
+                                    'cupboard': 'l', 'chocolate bar': 'obj', 'samantha': 'p', 'ella': 'p',
+                                    'drink': 'obj', 'pear': 'obj', 'dylan': 'p', 'chocolate egg': 'obj', 'tyler': 'p',
+                                    'notebook': 'obj', 'evan': 'p', 'toilet paper': 'obj', 'connor': 'p',
+                                    'bottles': 'obj', 'red bull': 'obj', 'max': 'p', 'joseph': 'p', 'skyler': 'p',
+                                    'cloth': 'obj', 'charger': 'obj', 'toiletries': 'obj', 'counter': 'l', 'seth': 'p',
+                                    'adam': 'p', 'bottle': 'obj', 'olivia': 'p', 'elliot': 'p', 'paige': 'p',
+                                    'salt': 'obj', 'wine': 'obj', 'nightstand':'l', 'hallway':'l', 'wardrobe':'l',
+                                    'bookshelf':'l', 'coffee_table':'l', 'sidetable':'l', 'dining_room':'l',
+                                    'kitchen_table':'l', 'kitchen_cabinet':'l', 'rice':'obj',
+                                    'kleenex':'obj', 'whiteboard cleaner':'obj', 'cup':'obj', 'drink':'obj', 'food':'obj',
+                                    'cleaning_stuff':'obj', 'mia':'p', 'liam':'p', 'sophia':'p', 'abigail':'p',
+                                    'mason':'p', 'alexander':'p', 'isabella':'p', 'ava':'p', 'person':'p'}
 
     def map_nlu_to_pddl_domain(self, reconized_intention, reconized_slot):
         # mapping the recognized intention (output from the nlu) to the corresponding predicate of the pddl domain
@@ -96,14 +95,16 @@ class nlu_knowledge_upload(object):
             if(self.intention_to_action[reconized_intention] in self.action_to_predicate):
                 self.attribute_name = self.action_to_predicate[self.intention_to_action[reconized_intention]]
 
-        # mapping the recognized slots (output from the nlu) to the corresponding types of the pddl domain
-        self.value = []
-        for argument in reconized_slot:
-            if(argument in self.slot_to_type):
-                self.value.append( [self.slot_to_type[argument] , argument] )
+            # mapping the recognized slots (output from the nlu) to the corresponding types of the pddl domain
+            self.value = []
+            for argument in reconized_slot:
+                if(argument in self.slot_to_type):
+                    self.value.append( [self.slot_to_type[argument] , argument] )
+                elif(argument == 'yourself'):
+                    self.value.append( [self.slot_to_type['person'] , 'person'] )
 
-                if (self.attribute_name == 'holding'): # hardcode while issue #80 is not solved - after this line can be removed
-                    self.value.append( ['robot', 'mbot'] )
+                    #if (self.attribute_name == 'holding'): # hardcode while issue #80 is not solved - after this line can be removed
+                        #self.value.append( ['robot', 'mbot'] )
 
         return self.attribute_name, self.value
 
