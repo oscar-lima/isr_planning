@@ -12,6 +12,8 @@ from mbot_action_msgs.msg import PickObjectAction, PickObjectGoal
 from mbot_action_msgs.msg import PerceiveLocationAction, PerceiveLocationGoal
 from mbot_action_msgs.msg import PlaceAction, PlaceGoal
 
+from mbot_action_msgs.msg import FindPersonAction, FindPersonGoal
+
 # functions to upload facts, goals into the knowledge base
 from knowledge_base_ros import upload_knowledge
 
@@ -46,6 +48,9 @@ class MbotPlannerExecutor(object):
         # initialize mbot class
         self.mbot = mbot_class.mbotRobot()
 
+        # create obj to use KB update functions
+        self.KB_updater = upload_knowledge.UploadPDDLKnowledge()
+
         # Inform user about the parameters that will be used
         rospy.loginfo("The node will run with the following parameters :")
         if self.mockup:
@@ -54,7 +59,7 @@ class MbotPlannerExecutor(object):
         else:
             rospy.loginfo('mockup is set to false')
         rospy.loginfo("-----------------")
-        
+
     # HACK: speechCallback function, should be queried by world model perhaps...
     def speechCallback(self, msg):
         # receives a string with the speech recognition sentence
@@ -89,9 +94,9 @@ class MbotPlannerExecutor(object):
     def publish_success(self):
         rospy.loginfo('Plan succesfully completed, everyone is happy now : )')
         self.event_out_pub.publish(String('e_success'))
-        
-        
-    def move_base(self, arm_safe_position, current_robot_location, destination, duration=150.0):
+
+
+    def move_base(self, arm_safe_position, current_robot_location, destination, timeout=150.0):
 
         rospy.loginfo('calling action client move_base_safe ' + current_robot_location + ' ' + destination)
         # mockup begins----
@@ -109,7 +114,7 @@ class MbotPlannerExecutor(object):
             # goal.source_location = current_robot_location
             # goal.destination_location = destination
             # client.send_goal(goal)
-            # client.wait_for_result(rospy.Duration.from_sec(duration))
+            # client.wait_for_result(rospy.Duration.from_sec(timeout))
             # rospy.loginfo('action server finished execution with the following response : ' + str(client.get_result().success))
             # if client.get_result().success == False:
             #     return self.replan()
@@ -121,7 +126,7 @@ class MbotPlannerExecutor(object):
             else:
                 return False
 
-    def perceive_location(self, location, duration=150.0):
+    def perceive_location(self, location, timeout=150.0):
 
         rospy.loginfo("calling action client perceive location " + location)
         # mockup begins
@@ -138,14 +143,14 @@ class MbotPlannerExecutor(object):
             goal = PerceiveLocationGoal()
             goal.location = location
             client.send_goal(goal)
-            client.wait_for_result(rospy.Duration.from_sec(duration))
+            client.wait_for_result(rospy.Duration.from_sec(timeout))
             rospy.loginfo("action server finished execution with the following response : " + str(client.get_result().success))
             if client.get_result().success == False:
                 return self.replan()
             else:
                 return True
 
-    def pick_object(self, obj, duration=150.0):
+    def pick_object(self, obj, timeout=150.0):
 
         rospy.loginfo("calling action client pick_object " + obj)
         # mockup begins
@@ -161,7 +166,7 @@ class MbotPlannerExecutor(object):
             goal = PickObjectGoal()
             goal.obj = obj
             client.send_goal(goal)
-            client.wait_for_result(rospy.Duration.from_sec(duration))
+            client.wait_for_result(rospy.Duration.from_sec(timeout))
             rospy.loginfo(
                 "action server finished execution with the following response : " + str(client.get_result().success))
             if client.get_result().success == False:
@@ -169,7 +174,7 @@ class MbotPlannerExecutor(object):
             else:
                 return True
 
-    def place(self, duration=150.0):
+    def place(self, timeout=150.0):
 
         rospy.loginfo("calling action client place " + obj + location)
         # mockup begins
@@ -185,15 +190,15 @@ class MbotPlannerExecutor(object):
             goal = PlaceGoal()
             goal.shelf = 'folded'
             client.send_goal(goal)
-            client.wait_for_result(rospy.Duration.from_sec(duration))
+            client.wait_for_result(rospy.Duration.from_sec(timeout))
             rospy.loginfo("action server finished execution with the following response : " + str(client.get_result().success))
             if client.get_result().success == False:
                 return self.replan()
             else:
                 return True
 
-    def find_person(self, timeout):
-        client = actionlib.SimpleActionClient('find_person_server', FindPersonAction)
+    def find_person(self, timeout=150.0):
+        client = actionlib.SimpleActionClient('/find_person_server', FindPersonAction)
         client.wait_for_server()
         rospy.loginfo('server is up !')
         goal = FindPersonGoal()
@@ -201,7 +206,7 @@ class MbotPlannerExecutor(object):
 
         client.send_goal(goal)
         client.wait_for_result(rospy.Duration.from_sec(int(timeout)))
-        if client.get_result():
+        if client.get_result().success:
             return True
         else:
             return False
@@ -229,8 +234,8 @@ class MbotPlannerExecutor(object):
         else:
             self.mbot.hri.say("Sorry, I do not know your answer")
         return True
-    
-    def update_kb_move_base(self, source, destination, robot, success=True):
+
+    def update_kb_move_base(self, source, destination, success=True):
         """
         1.  robot is no longer at start if accion succeded removing this predicate from knowledge base
         2.  robot acomplished the given goal removing this goal from pending goals (in case it is there because
@@ -238,10 +243,10 @@ class MbotPlannerExecutor(object):
         3.  add knowledge, now robot is at destination
         """
         if success:
-            params = [['r', robot],['l', source]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at', params, update_type='REMOVE_KNOWLEDGE')
-            params = [['r', robot],['l', destination]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at', params, update_type='ADD_KNOWLEDGE')
+            params = [['l', source]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at', params, update_type='REMOVE_KNOWLEDGE')
+            params = [['l', destination]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at', params, update_type='ADD_KNOWLEDGE')
         else:
             pass
 
@@ -249,9 +254,9 @@ class MbotPlannerExecutor(object):
 
         if success:
             params = [['f', furniture]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'perceived', params, update_type='ADD_KNOWLEDGE')
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'perceived', params, update_type='ADD_KNOWLEDGE')
             params = [['obj', obj]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'obj_perceived', params, update_type='ADD_KNOWLEDGE')
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'obj_perceived', params, update_type='ADD_KNOWLEDGE')
 
         else:
             pass
@@ -260,16 +265,16 @@ class MbotPlannerExecutor(object):
 
         if success:
             params = [['g', gripper]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'loaded', params,
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'loaded', params,
                                                       update_type='ADD_KNOWLEDGE')
             params = [['obj', obj], ['f', furniture]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'on', params,
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'on', params,
                                                       update_type='REMOVE_KNOWLEDGE')
             params = [['obj', obj], ['g', gripper]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'holding', params,
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'holding', params,
                                                       update_type='ADD_KNOWLEDGE')
             params = [['f', furniture]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'perceived', params,
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'perceived', params,
                                                       update_type='REMOVE_KNOWLEDGE')
         else:
             pass
@@ -278,41 +283,51 @@ class MbotPlannerExecutor(object):
 
         if success:
             params = [['obj', obj], ['f', furniture]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'on', params,
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'on', params,
                                                       update_type='ADD_KNOWLEDGE')
             params = [['g', gripper]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'loaded', params,
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'loaded', params,
                                                   update_type='REMOVE_KNOWLEDGE')
             params = [['obj', obj], ['g', gripper]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'holding', params,
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'holding', params,
                                                       update_type='ADD_KNOWLEDGE')
             params = [['obj', obj], ['f', furniture]]
-            upload_knowledge.rosplan_update_knowledge(1, 'n/a', 'n/a', 'on', params,
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'on', params,
                                                   update_type='REMOVE_GOAL')
         else:
             pass
+
+    def update_kb_find_person(self, person , success=True):
+
+        if success:
+            params = [['p', person]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'found', params,
+                                                      update_type='ADD_KNOWLEDGE')
+        else:
+            pass
+
 
     def planCallBack(self, plan_msg):
         self.plan_msg = plan_msg
         self.plan_received = True
         rospy.loginfo('plan received !')
-        
-        
+
+
     def execute_plan(self):
         rospy.loginfo('Executing plan')
         for action in self.plan_msg.plan:
             if action.name == 'move_base':
                 rospy.loginfo('requesting move_base_safe action from actionlib server : move_base_safe')
-                if self.move_base('folded', action.parameters[0].value, action.parameters[1].value, duration=150.0):
+                if self.move_base('folded', action.parameters[0].value, action.parameters[1].value, timeout=150.0):
                     rospy.loginfo('action succeded !')
-                    self.update_kb_move_base(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value, success=True)
+                    self.update_kb_move_base(action.parameters[0].value, action.parameters[1].value, success=True)
                 else:
                     rospy.logerr('action failed ! , aborting the execution...')
                     return
 
             elif action.name == 'perceive_location':
                 rospy.loginfo('requesting perceive location action from actionlib server : perceive_location')
-                if self.perceive_location(action.parameters[2].value, duration=150.0):
+                if self.perceive_location(action.parameters[2].value, timeout=150.0):
                     self.update_kb_perceive_locations(action.parameters[0].value, action.parameters[1].value, success=True)
                     rospy.loginfo('action succeded !')
                 else:
@@ -320,7 +335,7 @@ class MbotPlannerExecutor(object):
                     return
             elif action.name == 'grasp':
                 rospy.loginfo('requesting pick_object action from actionlib server : pick_object')
-                if self.pick_object(action.parameters[0].value, duration=150.0):
+                if self.pick_object(action.parameters[0].value, timeout=150.0):
                     self.update_kb_pick_object(action.parameters[0].value, action.parameters[1].value, action.parameters[3].value,
                                                success=True)
                     rospy.loginfo('action succeded !')
@@ -329,7 +344,7 @@ class MbotPlannerExecutor(object):
                     return
             elif action.name == 'place':
                 rospy.loginfo('requesting place action from actionlib server : place')
-                if self.place(duration=150.0):
+                if self.place(timeout=150.0):
                     self.update_kb_place(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value,
                                          success=True)
                     rospy.loginfo('action succeded !')
@@ -338,9 +353,8 @@ class MbotPlannerExecutor(object):
                     return
             elif action.name == 'find_person':
                 rospy.loginfo('requesting find_person action from actionlib server : place')
-                if self.find_person(duration=150.0):
-                    self.update_kb_find_person(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value,
-                                         success=True)
+                if self.find_person(timeout=150.0):
+                    self.update_kb_find_person(action.parameters[0].value, success=True)
                     rospy.loginfo('action succeded !')
                 else:
                     rospy.logerr('explain action failed')
@@ -356,7 +370,7 @@ class MbotPlannerExecutor(object):
                     return
             elif action.name == 'guide':
                 rospy.loginfo('requesting move_base_safe action from actionlib server : move_base_safe')
-                if self.move_base('folded', action.parameters[0].value, action.parameters[1].value, duration=150.0):
+                if self.move_base('folded', action.parameters[0].value, action.parameters[1].value, timeout=150.0):
                     rospy.loginfo('action succeded !')
                     self.update_kb_guider(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value, success=True)
                 else:
@@ -390,7 +404,7 @@ class MbotPlannerExecutor(object):
                 self.plan_received = False
                 return
         self.publish_success()
-        
+
     def start_mbot_planner_executor(self):
         while not rospy.is_shutdown():
             if self.plan_received == True:
