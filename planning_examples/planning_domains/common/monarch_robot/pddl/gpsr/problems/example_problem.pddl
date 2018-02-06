@@ -29,7 +29,7 @@
     ; pedro is puzzled because he has a question
     (puzzled pedro)
 
-    ; the cracker are located at the dinner table
+    ; the crackers are located at the dinner table
   	(on crackers dinner_table)
 
   )

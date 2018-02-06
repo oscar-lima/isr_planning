@@ -33,7 +33,7 @@
     ; the robot told to person ?p what was asked to tell
     (told ?p - person)
 
-    ; a person ?p is puzzled and hungry for aswers
+    ; a person ?p is puzzled and hungry for answers
     (puzzled ?p - person)
 
     ; a person ?p is knowleadgeable now, because his question was answered
