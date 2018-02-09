@@ -6,11 +6,10 @@
  min_req_facts_path -> path where the generated pddl file should be saved, by default: '/(planning_domains package path)/common/monarch_robot/pddl/gpsr/problems'
  min_req_facts_file_name -> name of the generated pddl file, by default: '/minimum_required_facts.pddl'
   -->
- 
+
  <node pkg="intrinsic_knowledge_generator" type="intrinsic_knowledge_generator_node" name="intrinsic_knowledge_generator_node" output="screen" >
 <!--	<param name="min_req_facts_path" value="$(find planning_domains)/common/monarch_robot/pddl/gpsr/problems" /> -->
 	<param name="min_req_facts_file_name" value="/minimum_required_facts.pddl" />
  </node>
- 
 
 </launch>
