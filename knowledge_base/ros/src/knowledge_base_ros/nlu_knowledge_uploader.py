@@ -18,7 +18,7 @@ class nlu_knowledge_upload(object):
         self.nlu_knowledge_uploader = upld.UploadPDDLKnowledge()
 
         # subscribe to recognized_intention topic that is publiched by natural_language_understanding node
-        rospy.Subscriber("natural_language_understanding/recognized_intention", ActionSlotArray, self.nluCallback)
+        rospy.Subscriber("~intention_and_args", ActionSlotArray, self.nluCallback)
 
         # get from param server the frequency at which this node will pool incoming messages
         self.loop_rate = rospy.Rate(rospy.get_param('~loop_rate', 10.0))
