@@ -46,7 +46,7 @@ class MbotPlannerExecutor(object):
         rospy.Subscriber("~speech_recognition", String, self.speechCallback) # HACK, remove : listens also to speech topic to pass as argument to explain action
 
         # initialize mbot class
-        self.mbot = mbot_class.mbotRobot()
+        self.mbot = mbot_class.mbotRobot(disabled={'perception': True, 'people_following': True, 'yolo': True, 'misc': True, 'roah': True, 'hri': False, 'manipulation': True, 'navigation': False})
 
         # create obj to use KB update functions
         self.KB_updater = upload_knowledge.UploadPDDLKnowledge()
@@ -244,9 +244,12 @@ class MbotPlannerExecutor(object):
         """
         if success:
             params = [['l', source]]
-            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at', params, update_type='REMOVE_KNOWLEDGE')
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='REMOVE_KNOWLEDGE')
             params = [['l', destination]]
-            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at', params, update_type='ADD_KNOWLEDGE')
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='ADD_KNOWLEDGE')
+            # remove finished goal from KB
+            params = [['l', destination]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='REMOVE_GOAL')
         else:
             pass
 
