@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import intrinsic_knowledge_generator_ros.intrinsic_knowledge_generator_node
+
+if __name__ == '__main__':
+ intrinsic_knowledge_generator_ros.intrinsic_knowledge_generator_node.main()
