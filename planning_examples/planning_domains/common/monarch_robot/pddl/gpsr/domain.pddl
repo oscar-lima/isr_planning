@@ -92,7 +92,7 @@
   )
 
   ; HRI action
-  ; i.e. go to the kitchen, find a person and introduce yourself
+  ; i.e. go to the kitchen, find a person and introduce yourself / meet alice in the entrance
   (:action introduce
     :parameters (?p - person ?l - location)
     :precondition (and (at_p ?p ?l) (at_r ?l) (found_p ?p))

@@ -26,15 +26,19 @@ class nlu_knowledge_upload(object):
         self.loop_rate = rospy.Rate(rospy.get_param('~loop_rate', 10.0))
 
         # dictionary that translates between the nlu intention output and the corresponding actions on the pddl domain
-        self.intention_to_action = {'go':'move_base' , 'grasp':'grasp', 'meet':'introduce' , 'take':'place' , 'guide':'guide' , 'find':'find_person' , 'tell':'tell' , 'answer':'answer_question' }
+        self.intention_to_action = {'go':'move_base' , 'grasp':'grasp', 'meet':'introduce' , 'take':'place' , 'guide':'guide' , 'find':'find_person' , 'tell':'tell' , 'answer':'answer_question', 'follow':'follow' }
         
         # dictionary that translates between the actions on the pddl domain and the corresponding predicates on the pddl domain
-        self.action_to_predicate = {'move_base':'at_r' , 'grasp':'holding', 'place':'on', 'find_person':'found', 'introduce':'known_p', 'guide':'at_p', 'answer_question':'iluminated' , 'tell':'told'}
+        self.action_to_predicate = {'move_base':'at_r' , 'grasp':'holding', 'place':'on', 'find_person':'found', 'introduce':'known_p', 'guide':'at_p', 'answer_question':'iluminated' , 'tell':'told', 'follow':'following'}
         
         # dictionary that translates between the nlu slot output and the corresponding types on the pddl domain
         self.slot_to_type = slots_dict
 
     def map_nlu_to_pddl_domain(self, reconized_intention, reconized_slot):
+        # concatenate with and underscore arguments or intentions that are separated by spaces        
+        for i in range(len(reconized_slot)):
+            reconized_slot[i] = reconized_slot[i].replace(' ', '_')
+
         # mapping the recognized intention (output from the nlu) to the corresponding predicate of the pddl domain
         if(reconized_intention in self.intention_to_action):
             if(self.intention_to_action[reconized_intention] in self.action_to_predicate):
@@ -45,16 +49,20 @@ class nlu_knowledge_upload(object):
             for argument in reconized_slot:
                 if(argument in self.slot_to_type):
                     self.value.append( [self.slot_to_type[argument] , argument] )
-                elif(argument == 'yourself'):
+                elif(argument == 'yourself' or argument == 'me'):
                     self.value.append( [self.slot_to_type['person'] , 'person'] )
 
                     #if (self.attribute_name == 'holding'): # hardcode while issue #80 is not solved - after this line can be removed
                         #self.value.append( ['robot', 'mbot'] )
-
+        
+        print "DEBUG"
+        print "***Att: ",  self.attribute_name
+        print "***Val: ", self.value
         return self.attribute_name, self.value
 
 
     def nluCallback(self, msg):
+        print "----NEW DATA---"
         '''
         This fuction will get executed upon receiving a msg on natural_language_processing topic
 
@@ -94,6 +102,10 @@ class nlu_knowledge_upload(object):
                         # map the intentions and slots to predicates and types
                         attribute_name, value = self.map_nlu_to_pddl_domain(phrase.recognized_action, slot)
 
+                        #print "DEBUG2"
+                        #print "***Att: ", attribute_name
+                        #print "***Val: ", value
+
                         # upload the translated goals to the knowledgebase
                         # the 'ADD_GOAL' flag sets these attributes to be uploaded as goals. Use the flag 'ADD_KNOWLEDGE' to upload as facts.
                         # use 'REMOVE_KNOWLEDGE' and 'REMOVE_GOAL' to remove facts and goals, respectively.
@@ -104,6 +116,7 @@ class nlu_knowledge_upload(object):
 
 
 def main():
+    print "----------------Begin---------------------"
     # launch the upload_pddl_knowledge_node so we are able to upload knowledge to the knowledgbase
     rospy.init_node('upload_pddl_knowledge_node', anonymous=False)
 
