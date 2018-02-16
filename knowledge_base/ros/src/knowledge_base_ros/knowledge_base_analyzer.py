@@ -137,9 +137,9 @@ class KnowledgeBaseAnalizer(object):
                     self.new_knowledge_event_out.publish(String('e_failure'))
                     continue
                 if self.look_for_new_knowledge():
-                    self.new_knowledge_event_out.publish(String('e_success'))
+                    self.new_knowledge_event_out.publish(String('e_new_knowledge'))
                 else:
-                    self.new_knowledge_event_out.publish(String('e_failure'))
+                    self.new_knowledge_event_out.publish(String('e_no_new_knowledge'))
             elif self.is_goals_available_request_received == True:
                 # lower flag
                 self.is_goals_available_request_received = False
@@ -150,9 +150,9 @@ class KnowledgeBaseAnalizer(object):
                     continue
                 if self.look_for_unfinished_goals():
                     rospy.loginfo('There are unfinished goals in the KB')
-                    self.pending_goals_event_out.publish(String('e_success'))
+                    self.pending_goals_event_out.publish(String('e_new_goals'))
                 else:
-                    self.pending_goals_event_out.publish(String('e_failure'))
+                    self.pending_goals_event_out.publish(String('e_no_new_goals'))
             self.loop_rate.sleep()
 
 
