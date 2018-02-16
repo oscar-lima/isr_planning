@@ -30,9 +30,6 @@ class KnowledgeBaseAnalizer(object):
         # Publishers
         self.pending_goals_event_out = rospy.Publisher('~pending_goals/event_out', String, queue_size=1)
         self.new_knowledge_event_out = rospy.Publisher('~new_knowledge/event_out', String, queue_size=1)
-        # Ensure that rosplan services are available:
-        if rosservice.rosservice_find('rosplan_knowledge_msgs/GetAttributeService') == []:
-            rospy.logerr('/kcl_rosplan/get_current_knowledge service is not available! This node will not be able to work (knowledge base analyzer)')
         # for keeping memory of the information inside the knowledge base
         self.knowledge_base_info = 'attributes: []'
         # The maximum amount of time to wait for the rosplan knowledge base service to show
@@ -45,7 +42,7 @@ class KnowledgeBaseAnalizer(object):
         self.is_new_knowledge_request_received = False
         self.new_knowledge_request_msg = None
         self.is_goals_available_request_received = False
-        
+
 
     def pending_goals_event_in_cb(self, msg):
         """
@@ -160,4 +157,3 @@ def main():
     rospy.init_node('knowledge_base_analyzer_node')
     knowledge_base_analyzer = KnowledgeBaseAnalizer()
     knowledge_base_analyzer.start_knowledge_base_analyzer()
-    
