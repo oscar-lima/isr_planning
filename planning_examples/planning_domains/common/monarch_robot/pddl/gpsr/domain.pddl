@@ -34,7 +34,7 @@
     (known_p ?p - person)
 
     ; the robot told to person ?p what was asked to tell
-    (told ?p - person)
+    (told ?p - person ?l - location)
 
     ; a person ?p is puzzled and hungry for answers
     (puzzled ?p - person)
@@ -121,7 +121,7 @@
   (:action tell
     :parameters (?p - person ?l - location)
     :precondition (and (at_p ?p ?l) (at_r ?l) (found_p ?p))
-    :effect (and (told ?p) (increase (total-cost) 1))
+    :effect (and (told ?p ?l) (increase (total-cost) 1))
   )
 
   ; HRI action
