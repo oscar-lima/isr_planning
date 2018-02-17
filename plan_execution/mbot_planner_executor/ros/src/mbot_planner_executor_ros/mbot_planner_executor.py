@@ -126,6 +126,17 @@ class MbotPlannerExecutor(object):
             else:
                 return False
 
+    def guide(self, arm_safe_position, person, source_location, destination_location, timeout=150.0):
+
+        rospy.sleep(1)
+        self.mbot.hri.say_and_wait("{}, please follow me to the {}".format(person, destination_location.replace('_',' ')))
+
+        if not self.move_base(arm_safe_position, source_location, destination_location, timeout=timeout):
+            return False
+
+        self.mbot.hri.say("We have arrived")
+        return True
+
     def perceive_location(self, location, timeout=150.0):
 
         rospy.loginfo("calling action client perceive location " + location)
@@ -211,8 +222,8 @@ class MbotPlannerExecutor(object):
         else:
             return False
 
-    def introduce(self, timeout):
-        self.mbot.hri.say('hello . . my name is mbot and I am the robot from the tecnico')
+    def introduce(self, person):
+        self.mbot.hri.say('Hello {}, my name is m bot and i am the robot from IST'.format(person))
         return True
 
     def ask_name(self):
@@ -250,6 +261,22 @@ class MbotPlannerExecutor(object):
             # remove finished goal from KB
             params = [['l', destination]]
             self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='REMOVE_GOAL')
+        else:
+            pass
+
+    def update_kb_guide(self, person, source, destination, success=True):
+        if success:
+            params = [['l', source]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='REMOVE_KNOWLEDGE')
+            params = [['p', person], ['l', source]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_p', params, update_type='REMOVE_KNOWLEDGE')
+            params = [['l', destination]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='ADD_KNOWLEDGE')
+            params = [['p', person], ['l', destination]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_p', params, update_type='ADD_KNOWLEDGE')
+            # remove finished goal from KB
+            params = [['p', person], ['l', destination]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_p', params, update_type='REMOVE_GOAL')
         else:
             pass
 
@@ -372,17 +399,19 @@ class MbotPlannerExecutor(object):
                     return
             elif action.name == 'introduce':
                 rospy.loginfo('requesting find_person action from actionlib server : place')
-                if self.introduce(timeout=150.0):
-                    self.update_kb_introduce(action.parameters[0].value, action.parameters[1].value, success=True)
+                person = action.parameters[0].value
+                location = action.parameters[1].value
+                if self.introduce(person):
+                    self.update_kb_introduce(person, location, success=True)
                     rospy.loginfo('introduce action succeded !')
                 else:
                     rospy.logerr('introduce action failed')
                     return
             elif action.name == 'guide':
                 rospy.loginfo('requesting move_base_safe action from actionlib server : move_base_safe')
-                if self.move_base('folded', action.parameters[0].value, action.parameters[1].value, timeout=150.0):
+                if self.guide('folded', action.parameters[0].value, action.parameters[1].value, action.parameters[2].value, timeout=150.0):
                     rospy.loginfo('guide action succeded !')
-                    self.update_kb_guider(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value, success=True)
+                    self.update_kb_guide(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value, success=True)
                 else:
                     rospy.logerr('guide action failed ! , aborting the execution...')
                     return
