@@ -7,19 +7,19 @@
 		 l--bar l--sofa l--kitchen_chair l--TV_stand l--cupboard l--toilet l--closet l--living_room l--sink l--kitchen - location
 		 l--bookcase l--living_table l--sideshelf l--table l--bathroom l--start l--kitchen_cabinet l--door l--bedroom_chair l--cabinet - location
 		 l--wardrobe l--bed l--nightstand l--counter l--center_table l--drawer l--couch l--corridor l--hallway l--coffee_table - location
-
+		
 		; people
 		 p--summer p--madison p--lewis p--charles p--toby p--thomas p--logan p--harrison p--liam p--emily - person
 		 p--blake p--noah p--josh p--aaron p--edward p--ethan p--scarlett p--theo p--luke p--samuel - person
 		 p--amy p--jack p--jacob p--alice p--eleanor p--arthur p--james p--barbara p--lucy p--ryan - person
 		 p--william p--harvey p--mason p--emma p--daniel p--max p--ken p--rosie p--alexander p--harry - person
-		 p--alex p--brooke p--faith p--jackie p--sophia p--rose p--ava p--emilia p--joshua p--connor - person
-		 p--sienna p--florence p--katie p--sarah p--oliver p--chloe p--tyler p--jane p--john p--oscar - person
-		 p--isaac p--amelia p--amelie p--nathan p--isabelle p--hanna p--tommy p--will p--henry p--sophie - person
-		 p--amber p--charlotte p--grace p--erika p--erik p--ivy p--peter p--zoe p--mia p--isabella - person
-		 p--abigail p--matthew p--brian p--martha p--lily p--jamie p--michael p--samantha p--ella p--daisy - person
-		 p--freddie p--evan p--louis p--dylan p--skyler p--charlie p--seth p--adam p--olivia p--elliot - person
-		 p--paige p--joseph - person
+		 p--alex p--brooke p--faith p--jackie p--sophia p--noperson p--rose p--ava p--emilia p--joshua - person
+		 p--connor p--sienna p--florence p--katie p--sarah p--oliver p--chloe p--tyler p--jane p--john - person
+		 p--oscar p--isaac p--amelia p--amelie p--nathan p--isabelle p--hanna p--tommy p--will p--henry - person
+		 p--sophie p--amber p--charlotte p--grace p--erika p--erik p--ivy p--peter p--zoe p--mia - person
+		 p--isabella p--abigail p--matthew p--brian p--martha p--lily p--jamie p--michael p--samantha p--ella - person
+		 p--daisy p--freddie p--evan p--louis p--dylan p--skyler p--charlie p--seth p--person p--adam - person
+		 p--olivia p--elliot p--paige p--joseph - person
 
 		; objects
 		 obj--bananas obj--laptop obj--peaches obj--milk obj--blueberries obj--pens obj--ham obj--tablet obj--peanut obj--sugar - object
@@ -35,7 +35,7 @@
 		 obj--vodka obj--snacks obj--candies obj--senbei obj--pie obj--cloth obj--blueberry obj--bowl obj--onions obj--cream - object
 		 obj--lemon obj--peach obj--water obj--book obj--cereals_bar obj--plates obj--soap obj--pringles obj--pizza obj--pear - object
 		 obj--notebook obj--chewing_gum obj--bottles obj--cleaning_stuff obj--glass obj--toiletries obj--juice obj--bottle obj--wine obj--salt - object
-
+		
 )
 	(:init
 		; the robot at start is in the entrance of the house
