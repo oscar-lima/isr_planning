@@ -10,7 +10,10 @@ import knowledge_base_ros.upload_knowledge as upld
 # import mapping from slot to the available types
 from mbot_world_model_ros.gpsr_dict import slots_dict
 
+# import mbot class
 from mbot_robot_class_ros import mbot as mbot_class
+
+from rosplan_knowledge_msgs.srv import GetAttributeService
 
 class nlu_knowledge_upload(object):
     def __init__(self):
@@ -38,6 +41,7 @@ class nlu_knowledge_upload(object):
         # Instantiating mbotRobot object
         self.mbot = mbot_class.mbotRobot(disabled={'perception': True, 'people_following': True, 'yolo': True, 'misc': True, 'hri': False, 'manipulation': True, 'navigation': True})
 
+        self.knowledge_service = rospy.ServiceProxy('/kcl_rosplan/get_current_knowledge', GetAttributeService)
 
     def map_arguments_to_type(self, reconized_arguments):
         # mapping the recognized arguments (output from the nlu) to the corresponding types of the pddl domain
@@ -84,7 +88,8 @@ class nlu_knowledge_upload(object):
                     goal_intention = 'at_r'
                     goal_arguments.append(slot_arguments[i])
 
-            goal_arguments = self.map_arguments_to_type(goal_arguments)
+            if (goal_arguments):
+                goal_arguments = self.map_arguments_to_type(goal_arguments)
 
 #---------------------------------------GRASP-----------------------------------------------#
 #-------------------------------------------------------------------------------------------#
@@ -207,9 +212,21 @@ class nlu_knowledge_upload(object):
             for i in range(len(slot_description)):
                 if 'person' == slot_description[i]:
                     goal_intention = 'following'
-                    goal_arguments.append(slot_arguments[i])
+                    person_name = slot_arguments[i]
+                    goal_arguments.append(person_name)
 
-            goal_arguments = self.map_arguments_to_type(goal_arguments)
+            if (goal_arguments):
+                goal_arguments = self.map_arguments_to_type(goal_arguments)
+
+                try:
+                    robot_location = self.knowledge_service('at_r').attributes[0].values[0].value
+                    fact_intention = 'at_p'
+                    fact_arguments.append(person_name)
+                    fact_arguments.append(robot_location)
+                    fact_arguments = self.map_arguments_to_type(fact_arguments)
+
+                except KeyError as e:
+                    pass
 
         print "GOAL_INTENTION: ", goal_intention
         print "GOAL_ARGS: ", goal_arguments
