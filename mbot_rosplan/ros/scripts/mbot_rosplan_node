@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import mbot_rosplan_ros.mbot_rosplan_node
+
+if __name__ == '__main__':
+ mbot_rosplan_ros.mbot_rosplan_node.main()

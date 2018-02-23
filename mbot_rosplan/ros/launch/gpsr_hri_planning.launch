@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- GPSR General Purpose Service Robot task -->
+
+    <!-- ::::::::ARGUMENTS::::::::: -->
+
+    <!-- speech recognition -->
+    <arg name="speech_recog_required" default="false"/> <!-- option to switch off speech recog (useful for debugging) -->
+
+    <!-- NLU Natural language understanding -->
+    <arg name="use_syntaxnet" default="false"/> <!-- if false then single command recognition, if true then support multiple commands at once -->
+
+    <!-- task planning -->
+    <arg name="robot" default="monarch_robot" />
+    <arg name="domain" default="gpsr" />
+    <arg name="problem" default="p01" /> <!-- the filename to be used in pddl prob generation and planning -->
+    <arg name="planner_executor_mockup" default="true" /> <!-- if true then execution will not happen (useful for debugging) -->
+
+    <!-- ::::::::ARGUMENTS::::::::: -->
+
+  <!-- human robot interaction -->
+
+    <!-- option to bypass speech recog (useful for debugging) -->
+    <group if="$(arg speech_recog_required)">
+        <!-- speech recognition, input from microphone, publishes recognized speech to string topic -->
+        <include file="$(find vocon_speech_recognizer)/ros/launch/speech_recognition.launch" >
+            <arg name="grammar_file" value="demo/gpsr_ted_talk_demo.fcf" />
+            <arg name="output" value="log" />
+        </include>
+
+        <!-- mic control on/off with events -->
+        <include file="$(find vocon_speech_recognizer)/ros/launch/mic_control.launch"/>
+    </group>
+
+    <!-- NLU filter: pre-process speech recog output string to handle i.e. ! or single words, identify if its a harcoded question -->
+    <include file="$(find mbot_nlu_filter)/ros/launch/mbot_nlu_filter.launch" >
+        <arg name="speech_topic" value="/recognized_speech"/>
+        <arg name="filtered_speech_topic" value="/filtered_recognized_speech" />
+    </include>
+
+    <!-- Natural Language Understanding (NLU) : to understand between various different ways of saying the same command -->
+    <include file="$(find mbot_nlu)/ros/launch/mbot_nlu.launch" >
+        <arg name="nlu_input" value="/filtered_recognized_speech" />
+        <arg name="nlu_output" value="/mbot_hri/natural_language_understanding/recognized_intention" />
+        <arg name="use_syntaxnet" value="$(arg use_syntaxnet)" />
+    </include>
+
+  <!-- Task planning -->
+
+    <!-- intention to knowledge : convert intention and args coming from nlu and output knowledge -->
+    <node pkg="knowledge_base" type="nlu_knowledge_uploader_node" name="intention_to_knowledge" output="screen" >
+        <remap from="~intention_and_args" to="/mbot_hri/natural_language_understanding/recognized_intention" />
+    </node>
+
+    <!-- upload intrinsic knowledge into the KB -->
+    <include file="$(find intrinsic_knowledge_generator)/ros/launch/intrinsic_knowledge_generator.launch" />
+
+    <!-- rosplan knowledge base NOTE: careful not to launch twice -->
+    <!--include file="$(find knowledge_base)/ros/launch/rosplan_knowledge_base_example.launch">
+      <arg name="robot" value="$(arg robot)" />
+      <arg name="domain" value="$(arg domain)" />
+    </include-->
+
+    <!-- instrinsic knowledge -->
+    <!-- to upload knowledge which will not come from referee box, such as robot intrinsic knowledge, object affordances, etc -->
+    <!-- parses minimum_problem.pddl and uploads instances and facts to KB -->
+    <include file="$(find knowledge_base)/ros/launch/upload_pddl_knowledge_example.launch" >
+      <arg name="robot" value="$(arg robot)" />
+      <arg name="domain" value="$(arg domain)" />
+      <arg name="problem" value="minimum_required_facts" />
+    </include>
+
+    <!-- subscribes to nlu and transforms intention and args into knowledge, predicates and types -->
+    <node pkg="knowledge_base" type="nlu_knowledge_uploader_node" name="nlu_knowledge_uploader_node" output="screen" >
+        <remap from="~intention_and_args" to="/mbot_hri/natural_language_understanding/recognized_intention"/>
+    </node>
+
+    <!-- ROSPlan components -->
+    <!-- TODO! -->
+
+</launch>
