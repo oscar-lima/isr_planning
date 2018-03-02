@@ -12,6 +12,11 @@ from mbot_world_model_ros.gpsr_dict import slots_dict
 
 from mbot_robot_class_ros import mbot as mbot_class
 
+#TODO: Test sentence and fix: "guide alice from the beddrom to the bathroom"
+#nlu output: recognized_action: "guide"
+#            slot: [alice is a person, bed into is a source, bathroom is a source]
+#uploaded goal: goal:(at_p alice) fact:(at_p alice alice bathroom)
+
 class nlu_knowledge_upload(object):
     def __init__(self):
         # flag to indicate that a event msg was received in the callback
@@ -40,6 +45,7 @@ class nlu_knowledge_upload(object):
 
 
     def map_arguments_to_type(self, reconized_arguments):
+        successful_mapping = True
         # mapping the recognized arguments (output from the nlu) to the corresponding types of the pddl domain
         arguments_types = []
         for arg in reconized_arguments:
@@ -47,9 +53,15 @@ class nlu_knowledge_upload(object):
                 arguments_types.append([self.slot_to_type[arg], arg])
             elif (arg == 'yourself' or arg == 'me'):
                 arguments_types.append([self.slot_to_type['person'], 'person'])
+            else:
+                print "BREAK"
+                arguments_types = []
+                successful_mapping = False
+                break
             # elif (arg == 'noperson'):
             #     arguments_types.append([self.slot_to_type['person'], 'noperson'])
 
+        print "Argtypes: ", arguments_types
         return arguments_types
 
     def split_slot(self, reconized_slot):
@@ -218,31 +230,6 @@ class nlu_knowledge_upload(object):
         print "FACT_ARGS: ", fact_arguments
         
         return goal_intention, goal_arguments, fact_intention, fact_arguments
-
-
-        '''
-        # mapping the recognized intention (output from the nlu) to the corresponding predicate of the pddl domain
-        if(reconized_intention in self.intention_to_action):
-            if(self.intention_to_action[reconized_intention] in self.action_to_predicate):
-                self.attribute_name = self.action_to_predicate[self.intention_to_action[reconized_intention]]
-
-            # mapping the recognized slots (output from the nlu) to the corresponding types of the pddl domain
-            self.value = []
-            for argument in reconized_slot:
-                if(argument in self.slot_to_type):
-                    self.value.append( [self.slot_to_type[argument] , argument] )
-                elif(argument == 'yourself' or argument == 'me'):
-                    self.value.append( [self.slot_to_type['person'] , 'person'] )
-
-                    #if (self.attribute_name == 'holding'): # hardcode while issue #80 is not solved - after this line can be removed
-                        #self.value.append( ['robot', 'mbot'] )
-        '''
-        #print "DEBUG"
-        #print "***Att: ", self.attribute_name
-        #print "***Val: ", self.value
-        #self.attribute_name = 'aa'
-        #self.value = 'bb'
-        #return self.attribute_name, self.value
 
 
     def nluCallback(self, msg):
