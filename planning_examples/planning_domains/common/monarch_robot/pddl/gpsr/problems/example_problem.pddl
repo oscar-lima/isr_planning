@@ -1,4 +1,4 @@
-(define (problem p01)
+(define (problem example_problem)
 
   (:domain gpsr) ; General Purpose Service Robot (in a home environment)
 
@@ -49,8 +49,8 @@
       ; robot needs to introduce itself to pedro
       (known_p pedro)
 
-      ; mbot needs to tell to pedro what was asked
-      (told pedro)
+      ; robot needs to tell to pedro what was asked
+      (told pedro kitchen)
 
       ; pedro needs to be guided to the exit
       (at_p pedro exit)
@@ -59,11 +59,12 @@
       (at_p person exit)
 
       ; robot needs to find a person
-      (found person)
+      (found_p person)
 
       ; pedro is puzzled and needs his question to be answered
       (iluminated pedro)
 
+      ; robot needs to follow pedro
       (following pedro)
 	  )
   )

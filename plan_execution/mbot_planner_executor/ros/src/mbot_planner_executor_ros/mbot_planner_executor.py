@@ -46,7 +46,7 @@ class MbotPlannerExecutor(object):
         rospy.Subscriber("~speech_recognition", String, self.speechCallback) # HACK, remove : listens also to speech topic to pass as argument to explain action
 
         # initialize mbot class
-        self.mbot = mbot_class.mbotRobot()
+        self.mbot = mbot_class.mbotRobot(disabled={'perception': True, 'people_following': True, 'yolo': True, 'misc': True, 'roah': True, 'hri': False, 'manipulation': True, 'navigation': False})
 
         # create obj to use KB update functions
         self.KB_updater = upload_knowledge.UploadPDDLKnowledge()
@@ -126,6 +126,17 @@ class MbotPlannerExecutor(object):
             else:
                 return False
 
+    def guide(self, arm_safe_position, person, source_location, destination_location, timeout=150.0):
+
+        rospy.sleep(1)
+        self.mbot.hri.say_and_wait("{}, please follow me to the {}".format(person, destination_location.replace('_',' ')))
+
+        if not self.move_base(arm_safe_position, source_location, destination_location, timeout=timeout):
+            return False
+
+        self.mbot.hri.say("We have arrived")
+        return True
+
     def perceive_location(self, location, timeout=150.0):
 
         rospy.loginfo("calling action client perceive location " + location)
@@ -197,7 +208,7 @@ class MbotPlannerExecutor(object):
             else:
                 return True
 
-    def find_person(self, timeout=150.0):
+    def find_person(self, timeout=60.0):
         client = actionlib.SimpleActionClient('/find_person_server', FindPersonAction)
         client.wait_for_server()
         rospy.loginfo('server is up !')
@@ -211,8 +222,8 @@ class MbotPlannerExecutor(object):
         else:
             return False
 
-    def introduce(self, timeout):
-        self.mbot.hri.say('Hello. My name is mbot and I am the robot from the SocRob team.')
+    def introduce(self, person):
+        self.mbot.hri.say('Hello {}, my name is m bot and i am the robot from IST'.format(person))
         return True
 
     def ask_name(self):
@@ -244,9 +255,28 @@ class MbotPlannerExecutor(object):
         """
         if success:
             params = [['l', source]]
-            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at', params, update_type='REMOVE_KNOWLEDGE')
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='REMOVE_KNOWLEDGE')
             params = [['l', destination]]
-            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at', params, update_type='ADD_KNOWLEDGE')
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='ADD_KNOWLEDGE')
+            # remove finished goal from KB
+            params = [['l', destination]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='REMOVE_GOAL')
+        else:
+            pass
+
+    def update_kb_guide(self, person, source, destination, success=True):
+        if success:
+            params = [['l', source]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='REMOVE_KNOWLEDGE')
+            params = [['p', person], ['l', source]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_p', params, update_type='REMOVE_KNOWLEDGE')
+            params = [['l', destination]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_r', params, update_type='ADD_KNOWLEDGE')
+            params = [['p', person], ['l', destination]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_p', params, update_type='ADD_KNOWLEDGE')
+            # remove finished goal from KB
+            params = [['p', person], ['l', destination]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'at_p', params, update_type='REMOVE_GOAL')
         else:
             pass
 
@@ -306,6 +336,14 @@ class MbotPlannerExecutor(object):
         else:
             pass
 
+    def update_kb_introduce(self, person, location, success=True):
+        if success:
+            params = [['p', person]]
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'known_p', params, update_type='REMOVE_GOAL')
+            self.KB_updater.rosplan_update_knowledge(1, 'n/a', 'n/a', 'known_p', params, update_type='ADD_KNOWLEDGE')
+        else:
+            pass
+
 
     def planCallBack(self, plan_msg):
         self.plan_msg = plan_msg
@@ -319,80 +357,81 @@ class MbotPlannerExecutor(object):
             if action.name == 'move_base':
                 rospy.loginfo('requesting move_base_safe action from actionlib server : move_base_safe')
                 if self.move_base('folded', action.parameters[0].value, action.parameters[1].value, timeout=150.0):
-                    rospy.loginfo('action succeded !')
+                    rospy.loginfo('move base action succeded !')
                     self.update_kb_move_base(action.parameters[0].value, action.parameters[1].value, success=True)
                 else:
-                    rospy.logerr('action failed ! , aborting the execution...')
+                    rospy.logerr('move_base action failed ! , aborting the execution...')
                     return
 
             elif action.name == 'perceive_location':
                 rospy.loginfo('requesting perceive location action from actionlib server : perceive_location')
                 if self.perceive_location(action.parameters[2].value, timeout=150.0):
                     self.update_kb_perceive_locations(action.parameters[0].value, action.parameters[1].value, success=True)
-                    rospy.loginfo('action succeded !')
+                    rospy.loginfo('perceive_location action succeded !')
                 else:
-                    rospy.logerr('explain action failed')
+                    rospy.logerr('preceive_location action failed')
                     return
             elif action.name == 'grasp':
                 rospy.loginfo('requesting pick_object action from actionlib server : pick_object')
                 if self.pick_object(action.parameters[0].value, timeout=150.0):
                     self.update_kb_pick_object(action.parameters[0].value, action.parameters[1].value, action.parameters[3].value,
                                                success=True)
-                    rospy.loginfo('action succeded !')
+                    rospy.loginfo('grasp action succeded !')
                 else:
-                    rospy.logerr('explain action failed')
+                    rospy.logerr('grasp action failed')
                     return
             elif action.name == 'place':
                 rospy.loginfo('requesting place action from actionlib server : place')
                 if self.place(timeout=150.0):
                     self.update_kb_place(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value,
                                          success=True)
-                    rospy.loginfo('action succeded !')
+                    rospy.loginfo('place action succeded !')
                 else:
-                    rospy.logerr('explain action failed')
+                    rospy.logerr('place action failed')
                     return
             elif action.name == 'find_person':
-                rospy.loginfo('requesting find_person action from actionlib server : place')
+                rospy.loginfo('requesting find_person action from actionlib server : find_person')
                 if self.find_person(timeout=150.0):
                     self.update_kb_find_person(action.parameters[0].value, success=True)
-                    rospy.loginfo('action succeded !')
+                    rospy.loginfo('find_person action succeded !')
                 else:
-                    rospy.logerr('explain action failed')
+                    rospy.logerr('find_person action failed')
                     return
             elif action.name == 'introduce':
                 rospy.loginfo('requesting find_person action from actionlib server : place')
-                if self.introduce():
-                    self.update_kb_introduce(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value,
-                                             success=True)
-                    rospy.loginfo('action succeded !')
+                person = action.parameters[0].value
+                location = action.parameters[1].value
+                if self.introduce(person):
+                    self.update_kb_introduce(person, location, success=True)
+                    rospy.loginfo('introduce action succeded !')
                 else:
-                    rospy.logerr('explain action failed')
+                    rospy.logerr('introduce action failed')
                     return
             elif action.name == 'guide':
                 rospy.loginfo('requesting move_base_safe action from actionlib server : move_base_safe')
-                if self.move_base('folded', action.parameters[0].value, action.parameters[1].value, timeout=150.0):
-                    rospy.loginfo('action succeded !')
-                    self.update_kb_guider(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value, success=True)
+                if self.guide('folded', action.parameters[0].value, action.parameters[1].value, action.parameters[2].value, timeout=150.0):
+                    rospy.loginfo('guide action succeded !')
+                    self.update_kb_guide(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value, success=True)
                 else:
-                    rospy.logerr('action failed ! , aborting the execution...')
+                    rospy.logerr('guide action failed ! , aborting the execution...')
                     return
             elif action.name == 'answer_question':
                 rospy.loginfo('requesting find_person action from actionlib server : place')
                 if self.answer_question():
                     self.update_kb_answer_question(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value,
                                             success=True)
-                    rospy.loginfo('action succeded !')
+                    rospy.loginfo('answer_question action succeded !')
                 else:
-                    rospy.logerr('explain action failed')
+                    rospy.logerr('answer_question action failed')
                     return
             elif action.name == 'ask_name':
                 rospy.loginfo('requesting find_person action from actionlib server : place')
                 if self.ask_name():
                     self.update_kb_ask_name(action.parameters[0].value, action.parameters[1].value, action.parameters[2].value,
                                              success=True)
-                    rospy.loginfo('action succeded !')
+                    rospy.loginfo('ask_name action succeded !')
                 else:
-                    rospy.logerr('explain action failed')
+                    rospy.logerr('ask_name action failed')
                     return
             else:
                 rospy.logerr('Error: action "{0}" not recognized, skipping.'.format(action.name))
